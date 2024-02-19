@@ -12,6 +12,7 @@ const store = createStore({
         return {
             authenticated: false,
             user: {},
+            products : [],
             _lang : 'en',
             _translate : {},
         }

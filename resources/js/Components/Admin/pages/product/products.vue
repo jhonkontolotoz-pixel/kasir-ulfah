@@ -86,7 +86,7 @@
 
                                 </tbody>
                             </table>
-                            
+
                             </template>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
         data: function () {
 
             return {
-                products: {},
+                products: [],
                 _id : null,
                 loading: true
             }

@@ -93,8 +93,8 @@ import Errors from '../inc/ValidationErrors.vue'
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 processing: false,
                 creds: {
-                    email: '',
-                    password: '',
+                    email: 'san@houty.com',
+                    password: 'mafifi96',
                 },
                 passwordplaceholder : wTrans("password"),
                 emailplaceholder : wTrans("email")
