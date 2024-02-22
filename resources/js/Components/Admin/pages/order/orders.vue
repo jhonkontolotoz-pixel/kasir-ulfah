@@ -23,11 +23,18 @@
                     <template v-slot:loading>
                         <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
                     </template>
+                    <template v-slot:item.price="{item}">
+                        {{ currency(item.price) }}
+                    </template>
+                    <template v-slot:item.created_at="{item}">
+                        {{ formateDate(item.created_at) }}
+                    </template>
+
                     <template v-slot:item.actions="{ item }">
                         <v-icon size="small" class="me-2" @click="return">
                             mdi-pencil
                         </v-icon>
-                        <v-icon size="small" @click="return">
+                        <v-icon size="small" @click="warning(item.id)">
                             mdi-delete
                         </v-icon>
                     </template>
@@ -37,7 +44,12 @@
     </div>
 </div>
 </template>
+
 <script setup>
+import {
+    onMounted,
+    ref
+} from 'vue';
 import moment from 'moment'
 import {
     VDataTable,
@@ -46,34 +58,103 @@ import {
     VSkeletonLoader,
     VTextField
 } from 'vuetify/components'
-import { onMounted , ref } from 'vue';
+
 
 const headers = ref([{
-                    title: 'Id',
-                    key: 'id'
-                },
-                {
-                    title: 'Status',
-                    key: 'status'
-                },
-                {
-                    title: 'Price',
-                    key: 'total_price'
-                },
-                {
-                    title: 'Customer',
-                    key: 'user.name'
-                },
-                {
-                    title: 'Actions',
-                    key: 'actions',
-                    sortable: false
-                },
-            ]);
+        title: 'Id',
+        key: 'id'
+    },
+    {
+        title: 'Status',
+        key: 'status'
+    },
+    {
+        title: 'Price',
+        key: 'total_price'
+    },
+    {
+        title: 'Customer',
+        key: 'user.name'
+    },
+    {
+        title: 'created',
+        key: 'created_at'
+    },
+    {
+        title: 'Actions',
+        key: 'actions',
+        sortable: false
+    },
+]);
 
 const orders = ref([])
 const search = ref('')
 const loading = ref(true)
+
+
+
+async function getOrders() {
+    console.log("orders....")
+    await axios.get("/api/orders").then(res => {
+        orders.value = res.data.orders;
+    }).catch(err => {
+        console.log(err);
+    }).finally(() => {
+        loading.value = false;
+
+    });
+}
+
+function formateDate(date) {
+    return moment(date).format("MMMM Do YYYY, h:mm:ss a");
+}
+
+function currency(value) {
+    let val = (value / 1).toFixed(2).replace(".", ",");
+    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function warning(id) {
+    Swal.fire({
+        title: "Warning!",
+        text: "Do you want to delete this order!",
+        icon: "warning",
+        confirmButtonText: "yes",
+        showCancelButton: true
+    }).then(res => {
+        if (res.isConfirmed) {
+            deleteOrder(id);
+        }
+    });
+}
+
+async function deleteOrder(id) {
+    await axios.delete(`/api/orders/${id}`).then(res => {
+        Swal.fire({
+            title: "deleted!",
+            text: "Order Deleted Successfully..!",
+            icon: "success",
+            showCancelButton: true
+        });
+        getOrders();
+    }).catch(err => {
+        Swal.fire({
+            title: "error!",
+            text: "something went wrong..!",
+            icon: "error",
+            showCancelButton: true
+        });
+    });
+}
+
+
+onMounted(async () => {
+
+console.log("mounted...")
+await getOrders();
+document.title = "Store | Orders";
+})
+
 
 /*
 import moment from 'moment'
@@ -180,6 +261,7 @@ export default {
 }
 */
 </script>
+
 <style>
 
 </style>
