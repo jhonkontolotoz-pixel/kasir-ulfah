@@ -1,95 +1,101 @@
 <template>
-    <div class="container-fluid">
-        <!-- Page header -->
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Categories</h1>
+<div class="container-fluid">
+    <!-- Page header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Categories</h1>
 
-            <router-link :to="{name : 'admin.category.create'}"
-                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-plus fa-sm "></i>
-                Create Category</router-link>
+        <router-link :to="{name : 'admin.category.create'}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-plus fa-sm "></i>
+            Create Category</router-link>
 
-        </div>
+    </div>
 
-        <!-- Content Row -->
-        <div class="row">
+    <!-- Content Row -->
+    <div class="row">
 
-            <div class="col-md-12">
+        <div class="col-md-12">
 
-                <div class="card">
-                    <div class="card-header">
-                        <h6 class="h6 text-muted">All Categories</h6>
-                    </div>
-                    <div class="card-body table-responsive">
-                        <template v-if="loading">
-                            <skeleton cols="4"></skeleton>
-                        </template>
-                        <template v-else>
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Careated At</th>
-                                        <th scope="col">Last Update</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+            <v-card eleveation="10">
 
+                <template v-slot:text>
+                    <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" single-line variant="outlined" hide-details>
+                    </v-text-field>
+                </template>
 
-                                    <tr v-for="(category, index) in categories" :key="category.id">
-                                        <th scope="row">{{ (index + 1)}}</th>
-                                        <td>
-                                            <router-link :to="{name : 'admin.category' , params : {id : category.id}}"
-                                                class="btn text-decoration-none">{{category.name}}</router-link>
-                                        </td>
-                                        <td>{{formateDate(category.created_at)}}</td>
-                                        <td>{{formateDate(category.updated_at)}}</td>
-                                    </tr>
+                <v-data-table hover :loading="loading" :headers="headers" :items="categories" :search="search">
+                    <template v-slot:loading>
+                        <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                    </template>
+                    <template v-slot:item.created_at="{item}">
+                        {{ formateDate(item.created_at) }}
+                    </template>
 
-                                </tbody>
-                            </table>
-                        </template>
-
-                    </div>
-                </div>
-            </div>
+                    <template v-slot:item.actions="{ item }">
+                        <v-icon size="small" class="me-2" @click="return">
+                            mdi-pencil
+                        </v-icon>
+                        <v-icon size="small" @click="return">
+                            mdi-delete
+                        </v-icon>
+                    </template>
+                </v-data-table>
+            </v-card>
 
         </div>
 
     </div>
 
+</div>
 </template>
-<script>
-    import moment from 'moment'
 
-    export default {
-        data: function () {
+<script setup>
+import {
+    onMounted,
+    ref
+} from 'vue';
+import moment from 'moment'
+import {
+    VDataTable,
+    VCard,
+    VIcon,
+    VSkeletonLoader,
+    VTextField
+} from 'vuetify/components'
 
-            return {
-                categories: [],
-                loading: true
-            }
-        },
-        methods: {
-            getCategories() {
-                axios.get("/api/categories").then(res => {
-                    this.categories = res.data;
-                }).catch(err => {
-                    console.log(err)
-                }).finally(() => {
-                    this.loading = false
-                })
-            },
-            formateDate(value) {
-                return moment(value).format('MMMM Do YYYY, h:mm:ss a');
-            }
-        },
-        mounted() {
-            this.getCategories()
-            document.title = "Store | Categories"
-        }
+const categories = ref([])
+const headers = ref([{
+        title: 'Name',
+        key: 'name'
+    },
+    {
+        title: 'Created',
+        key: 'created_at'
+    },
+    {
+        title: 'Updated',
+        key: 'updated_at'
     }
+])
+const search = ref('')
+const loading = ref(true)
 
+async function getCategories() {
+    await axios.get("/api/categories").then(res => {
+        categories.value = res.data;
+    }).catch(err => {
+        console.log(err)
+    }).finally(() => {
+        loading.value = false
+    })
+}
+
+function formateDate(value) {
+    return moment(value).format('MMMM Do YYYY, h:mm:ss a');
+}
+
+onMounted(() => {
+    getCategories()
+    document.title = "Store | Categories"
+})
 </script>
 
 <style scoped>
