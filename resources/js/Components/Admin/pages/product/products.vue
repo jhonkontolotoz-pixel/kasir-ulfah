@@ -28,7 +28,8 @@
 
             <div class="col-md-12">
 
-               <!--  <div class="card">
+                <!--
+                <div class="card">
                     <div class="card-header">
                         <h6 class="h6 text-muted">All products</h6>
                     </div>
@@ -80,37 +81,36 @@
 
                                 </tbody>
                             </table>
-
                         </template>
                     </div>
-                </div> -->
+                </div>
+            -->
 
+                <v-card eleveation="10">
 
-            <v-card eleveation="10">
+                    <template v-slot:text>
+                        <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" single-line variant="outlined" hide-details>
+                        </v-text-field>
+                    </template>
 
-<template v-slot:text>
-    <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" single-line variant="outlined" hide-details>
-    </v-text-field>
-</template>
+                    <v-data-table hover :loading="loading" :headers="headers" :items="categories" :search="search">
+                        <template v-slot:loading>
+                            <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                        </template>
+                        <template v-slot:item.created_at="{item}">
+                            {{ formateDate(item.created_at) }}
+                        </template>
 
-<v-data-table hover :loading="loading" :headers="headers" :items="categories" :search="search">
-    <template v-slot:loading>
-        <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
-    </template>
-    <template v-slot:item.created_at="{item}">
-        {{ formateDate(item.created_at) }}
-    </template>
-
-    <template v-slot:item.actions="{ item }">
-        <v-icon size="small" class="me-2" @click="return">
-            mdi-pencil
-        </v-icon>
-        <v-icon size="small" @click="return">
-            mdi-delete
-        </v-icon>
-    </template>
-</v-data-table>
-</v-card>
+                        <template v-slot:item.actions="{ item }">
+                            <v-icon size="small" class="me-2" @click="return">
+                                mdi-pencil
+                            </v-icon>
+                            <v-icon size="small" @click="return">
+                                mdi-delete
+                            </v-icon>
+                        </template>
+                    </v-data-table>
+                </v-card>
 
             </div>
 
@@ -121,7 +121,7 @@
 </div>
 </template>
 
-<script>
+<script setup>
 import {
     onMounted,
     ref
@@ -135,9 +135,7 @@ import {
     VTextField
 } from 'vuetify/components';
 
-
-const headers = ref([
-    {
+const headers = ref([{
         title: 'Title',
         key: 'title'
     },
@@ -173,7 +171,6 @@ const search = ref('')
 const loading = ref(true)
 const _id = ref('')
 
-
 async function getProducts() {
     await axios.get("/api/products").then(res => {
 
@@ -186,9 +183,8 @@ async function getProducts() {
     })
 }
 
-
-
 function warning(id) {
+
     _id.value = id
     Swal.fire({
         title: 'Warning!',
@@ -201,6 +197,7 @@ function warning(id) {
             deleteProduct(id)
         }
     })
+
 }
 
 async function deleteProduct(id) {
