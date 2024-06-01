@@ -26,9 +26,11 @@
                         <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
                     </template>
                     <template v-slot:item.created_at="{item}">
-                        {{ formateDate(item.created_at) }}
+                        {{ item.created_at }}
                     </template>
-
+                    <template v-slot:item.updated_at="{item}">
+                        {{ item.updated_at }}
+                    </template>
                     <template v-slot:item.actions="{ item }">
                         <v-icon size="small" class="me-2" @click="return">
                             mdi-pencil
@@ -52,7 +54,7 @@ import {
     onMounted,
     ref
 } from 'vue';
-import moment from 'moment'
+
 import {
     VDataTable,
     VCard,
@@ -73,7 +75,12 @@ const headers = ref([{
     {
         title: 'Updated',
         key: 'updated_at'
-    }
+    },
+    {
+        title: 'Actions',
+        key: 'actions',
+        sortable: false
+    },
 ])
 const search = ref('')
 const loading = ref(true)
@@ -86,10 +93,6 @@ async function getCategories() {
     }).finally(() => {
         loading.value = false
     })
-}
-
-function formateDate(value) {
-    return moment(value).format('MMMM Do YYYY, h:mm:ss a');
 }
 
 onMounted(() => {

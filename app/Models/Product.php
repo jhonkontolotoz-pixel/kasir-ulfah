@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Product_images;
 use App\Models\Category;
 use App\Models\ProductBrand;
+use App\Casts\Price;
 
 
 class Product extends Model
@@ -15,6 +16,11 @@ class Product extends Model
 
     protected $table = 'products';
 
+    protected $casts = [
+        'price' => Price::class,
+        'created_at' => 'datetime:Y-m-d',
+        'updated_at' => 'datetime:Y-m-d',
+    ];
 
     protected $guarded = [];
 
@@ -23,12 +29,12 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class, "category_id");
     }
-    
+
     public function brand()
     {
         return $this->belongsTo(ProductBrand::class, "brand_id");
     }
-    
+
 
     public function images()
     {

@@ -93,12 +93,12 @@
                         </v-text-field>
                     </template>
 
-                    <v-data-table hover :loading="loading" :headers="headers" :items="categories" :search="search">
+                    <v-data-table hover :loading="loading" :headers="headers" :items="products" :search="search">
                         <template v-slot:loading>
                             <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
                         </template>
                         <template v-slot:item.created_at="{item}">
-                            {{ formateDate(item.created_at) }}
+                            {{item.created_at }}
                         </template>
 
                         <template v-slot:item.actions="{ item }">
@@ -149,7 +149,7 @@ const headers = ref([{
     },
     {
         title: 'Category',
-        key: 'product.category.name'
+        key: 'category.name'
     },
     {
         title: 'Quantity',
@@ -162,6 +162,11 @@ const headers = ref([{
     {
         title: 'Updated',
         key: 'updated_at'
+    },
+    {
+        title: 'Actions',
+        key: 'actions',
+        sortable: false
     },
 
 ])
@@ -224,9 +229,6 @@ async function deleteProduct(id) {
 
 }
 
-function formateDate(date) {
-    return moment(date).format('MMMM Do YYYY, h:mm:ss a');
-}
 
 onMounted(() => {
     getProducts()

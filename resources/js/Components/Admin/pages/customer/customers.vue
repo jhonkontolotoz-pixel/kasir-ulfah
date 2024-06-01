@@ -1,161 +1,159 @@
 <template>
 <div>
 
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
-            <!-- Page header -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800">customers</h1>
-                <router-link :to="{name : 'admin.customers.create'}"
-                    class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-plus fa-sm "></i>
-                    Create customer</router-link>
-            </div>
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+        <!-- Page header -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">customers</h1>
+            <router-link :to="{name : 'admin.customers.create'}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-plus fa-sm "></i>
+                Create customer</router-link>
+        </div>
 
-            <!-- Content Row -->
-            <div class="row">
+        <!-- Content Row -->
+        <div class="row">
 
-                <div class="col-md-12">
+            <div class="col-md-12">
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="h6 text-muted">All customers</h6>
-                        </div>
-                        <div class="card-body table-responsive">
-                            <template v-if="loading">
-<skeleton cols="7"></skeleton>
-                            </template>
-                            <template v-else>
-                                <table class="table table-bordered text-center">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">name</th>
-                                        <th scope="col">phone</th>
-                                        <th scope="col">email</th>
-                                        <th scope="col">address</th>
-                                        <th scope="col">Careated At</th>
-                                        <th scope="col">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                <v-card eleveation="10">
 
-                                    <tr v-for="(customer , index) in customers" :key="index">
-                                        <td scope="row">{{(index + 1)}}</td>
-                                        <td>
-                                            <router-link :to="{name : 'admin.customers' , params : {id : customer.id}}">
-                                                {{customer.name}}</router-link>
-                                        </td>
-                                        <td>{{customer.phone ?? 'Not Provided'}}</td>
-                                        <td>{{customer.email ?? 'Not Provided'}}</td>
-                                        <td>{{customer.address ?? 'Not Provided'}}</td>
-                                        <td>{{formateDate(customer.created_at)}}</td>
+                    <template v-slot:text>
+                        <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" single-line variant="outlined" hide-details>
+                        </v-text-field>
+                    </template>
 
-                                        <td>
-                                            <div class="btn-group">
-                                            <router-link
-                                                    :to="{name : 'admin.customers.orders.create', params : {cid : customer.id }}"
-                                                    class="btn btn-info">
-                                                    <i class="fas fa-plus"></i>
-                                                </router-link>
-                                                <router-link
-                                                    :to="{name : 'admin.customers.edit', params : {cid : customer.id}}"
-                                                    class="btn btn-primary">
-                                                    <i class="fas fa-edit"></i>
-                                                </router-link>
-                                                <a @click.prevent="warning($event)" :data-id="customer.id"
-                                                    class="btn btn-danger "><i class="fas fa-trash"></i>
-                                                </a>
+                    <v-data-table hover :loading="loading" :headers="headers" :items="customers" :search="search">
+                        <template v-slot:loading>
+                            <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                        </template>
+                        <template v-slot:item.created_at="{item}">
+                            {{ item.created_at }}
+                        </template>
 
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                </tbody>
-                            </table>
-                            </template>
-                            
-                        </div>
-                    </div>
-                </div>
-
+                        <template v-slot:item.actions="{ item }">
+                            <v-icon size="small" class="me-2" @click="return">
+                                mdi-pencil
+                            </v-icon>
+                            <v-icon size="small" @click="return">
+                                mdi-delete
+                            </v-icon>
+                        </template>
+                    </v-data-table>
+                </v-card>
             </div>
 
         </div>
-        <!-- /.container-fluid -->
+
     </div>
-
-
+    <!-- /.container-fluid -->
+</div>
 </template>
 
-<script>
-import moment from 'moment'
+<script setup>
 
-export default {
-    data : () => ({
-        customers : {},
-        _id : null,
-        loading : true
-    }),
-    methods: {
-            async getcustomers() {
-                await axios.get("/api/customers").then(res => {
+import {
+    onMounted,
+    ref
+} from 'vue';
 
-                    this.customers = res.data.customers;
+import {
+    VDataTable,
+    VCard,
+    VIcon,
+    VSkeletonLoader,
+    VTextField
+} from 'vuetify/components';
 
-                }).catch(err => {
-                    console.log(err)
-                }).finally(()=>{
-                    this.loading = false
-                })
+const headers = ref([{
+        title: 'Name',
+        key: 'name'
+    },
+    {
+        title: 'Phone',
+        key: 'phone'
+    },
+    {
+        title: 'Email',
+        key: 'email'
+    },
+    {
+        title: 'address',
+        key: 'address'
+    },
 
-            },
-            warning(id) {
-                this._id = id
-                Swal.fire({
-                    title: 'Warning!',
-                    text: 'Do you want to delete this customer!',
-                    icon: 'warning',
-                    confirmButtonText: 'yes',
-                    showCancelButton: true
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        this.deletecustomer(id)
-                    }
-                })
-            },
-            async deletecustomer(id) {
+    {
+        title: 'Created',
+        key: 'created_at'
+    },
+    {
+        title: 'Actions',
+        key: 'actions',
+        sortable: false
+    }
 
-                await axios.delete(`/api/customers/${this._id}`).then(res => {
+])
 
-                    Swal.fire({
-                        title: 'deleted!',
-                        text: 'customer Deleted Successfully..!',
-                        icon: 'success',
-                        showCancelButton: true
-                    })
-                    this.getcustomers()
-                }).catch(err => {
+const customers = ref([])
+const search = ref('')
+const loading = ref(true)
+const _id = ref('')
 
-                    Swal.fire({
-                        title: 'error!',
-                        text: 'something went wrong..!',
-                        icon: 'error',
-                        showCancelButton: true
-                    })
+async function getcustomers() {
+    await axios.get("/api/customers").then(res => {
 
-                })
+        customers.value = res.data.customers;
 
-            },
-            formateDate(date) {
-                return moment(date).format('MMMM Do YYYY, h:mm:ss a');
-            }
-        },
-        mounted() {
-            this.getcustomers()
-            document.title = "Store | customers"
+    }).catch(err => {
+        console.log(err)
+    }).finally(() => {
+        loading.value = false
+    })
 
-        }
 }
+
+function warning(id) {
+    _id.value = id
+    Swal.fire({
+        title: 'Warning!',
+        text: 'Do you want to delete this customer!',
+        icon: 'warning',
+        confirmButtonText: 'yes',
+        showCancelButton: true
+    }).then(res => {
+        if (res.isConfirmed) {
+            deletecustomer(id)
+        }
+    })
+}
+
+async function deletecustomer(id) {
+
+    await axios.delete(`/api/customers/${_id.value}`).then(res => {
+
+        Swal.fire({
+            title: 'deleted!',
+            text: 'customer Deleted Successfully..!',
+            icon: 'success',
+            showCancelButton: true
+        })
+        getcustomers()
+    }).catch(err => {
+
+        Swal.fire({
+            title: 'error!',
+            text: 'something went wrong..!',
+            icon: 'error',
+            showCancelButton: true
+        })
+
+    })
+
+}
+
+onMounted(() => {
+    getcustomers()
+    document.title = "Store | customers"
+})
 </script>
 
 <style>

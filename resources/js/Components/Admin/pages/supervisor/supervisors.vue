@@ -1,141 +1,155 @@
 <template>
 <div>
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
-            <!-- Page header -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800">supervisors</h1>
-                <router-link :to="{name : 'admin.supervisors.create'}"
-                    class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-plus fa-sm "></i>
-                    Create supervisor</router-link>
-            </div>
-            <!-- Content Row -->
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="h6 text-muted">All supervisors</h6>
-                        </div>
-                        <div class="card-body table-responsive">
-                            <table class="table table-bordered text-center">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">name</th>
-                                        <th scope="col">phone</th>
-                                        <th scope="col">email</th>
-                                        <th scope="col">address</th>
-                                        <th scope="col">Careated At</th>
-                                        <th scope="col">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+        <!-- Page header -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Supervisors</h1>
+            <router-link :to="{name : 'admin.supervisors.create'}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-plus fa-sm "></i>
+                Create supervisor</router-link>
+        </div>
+        <!-- Content Row -->
+        <div class="row">
+            <div class="col-md-12">
 
-                                    <tr v-for="(supervisor , index) in supervisors" :key="index">
-                                        <td scope="row">{{(index + 1)}}</td>
-                                        <td>
-                                            <router-link :to="{name : 'admin.supervisors.supervisor' , params : {id : supervisor.id}}">
-                                                {{supervisor.name}}</router-link>
-                                        </td>
-                                        <td>{{supervisor.phone ?? 'Not Provided'}}</td>
-                                        <td>{{supervisor.email ?? 'Not Provided'}}</td>
-                                        <td>{{supervisor.address ?? 'Not Provided'}}</td>
-                                        <td>{{formateDate(supervisor.created_at)}}</td>
 
-                                        <td>
-                                            <div class="btn-group">
-                                                <router-link
-                                                    :to="{name : 'admin.supervisors.edit', params : {id : supervisor.id}}"
-                                                    class="btn btn-primary">
-                                                    <i class="fas fa-edit"></i>
-                                                </router-link>
-                                                <a @click.prevent="warning(supervisor.id)" :data-id="supervisor.id"
-                                                    class="btn btn-danger "><i class="fas fa-trash"></i>
-                                                </a>
+                <v-card eleveation="10">
 
-                                            </div>
-                                        </td>
-                                    </tr>
+                    <template v-slot:text>
+                        <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" single-line variant="outlined" hide-details>
+                        </v-text-field>
+                    </template>
 
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                    <v-data-table hover :loading="loading" :headers="headers" :items="supervisors" :search="search">
+                        <template v-slot:loading>
+                            <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                        </template>
+                        <template v-slot:item.created_at="{item}">
+                            {{ item.created_at }}
+                        </template>
 
+                        <template v-slot:item.actions="{ item }">
+                            <v-icon size="small" class="me-2" @click="return">
+                                mdi-pencil
+                            </v-icon>
+                            <v-icon size="small" @click="return">
+                                mdi-delete
+                            </v-icon>
+                        </template>
+                    </v-data-table>
+                </v-card>
             </div>
 
         </div>
-        <!-- /.container-fluid -->
+
     </div>
-
-
+    <!-- /.container-fluid -->
+</div>
 </template>
 
-<script>
-import moment from 'moment'
+<script setup>
+import {
+    onMounted,
+    ref
+} from 'vue';
 
-export default {
-    data : () => ({
-        supervisors : {},
-    }),
-    methods: {
-            getsupervisors() {
-                axios.get("/api/supervisors").then(res => {
+import {
+    VDataTable,
+    VCard,
+    VIcon,
+    VSkeletonLoader,
+    VTextField
+} from 'vuetify/components';
 
-                    this.supervisors = res.data.supervisors;
+const headers = ref([{
+        title: 'Name',
+        key: 'name'
+    },
+    {
+        title: 'Phone',
+        key: 'phone'
+    },
+    {
+        title: 'Email',
+        key: 'email'
+    },
+    {
+        title: 'address',
+        key: 'address'
+    },
 
-                }).catch(err => {
-                    console.log(err)
-                })
-            },
-            warning(id) {
+    {
+        title: 'Created',
+        key: 'created_at'
+    },
+    {
+        title: 'Actions',
+        key: 'actions',
+        sortable: false
+    }
 
-                Swal.fire({
-                    title: 'Warning!',
-                    text: 'Do you want to delete this supervisor!',
-                    icon: 'warning',
-                    confirmButtonText: 'yes',
-                    showCancelButton: true
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        this.deletesupervisor(id)
-                    }
-                })
-            },
-            async deletesupervisor(id) {
+])
 
-                await axios.delete(`/api/supervisors/${id}`).then(res => {
+const supervisors = ref([])
+const search = ref('')
+const loading = ref(true)
 
-                    Swal.fire({
-                        title: 'deleted!',
-                        text: 'supervisor Deleted Successfully..!',
-                        icon: 'success',
-                        showCancelButton: true
-                    })
-                    this.getsupervisors()
-                }).catch(err => {
+async function getsupervisors() {
+   await axios.get("/api/supervisors").then(res => {
 
-                    Swal.fire({
-                        title: 'error!',
-                        text: 'something went wrong..!',
-                        icon: 'error',
-                        showCancelButton: true
-                    })
+        supervisors.value = res.data.supervisors;
 
-                })
-
-            },
-            formateDate(date) {
-                return moment(date).format('MMMM Do YYYY, h:mm:ss a');
-            }
-        },
-        mounted() {
-            this.getsupervisors()
-            document.title = "Store | supervisors"
-
-        }
+    }).catch(err => {
+        console.log(err)
+    }).finally(()=>{
+        loading.value = false
+    })
 }
+
+function warning(id) {
+
+    Swal.fire({
+        title: 'Warning!',
+        text: 'Do you want to delete this supervisor!',
+        icon: 'warning',
+        confirmButtonText: 'yes',
+        showCancelButton: true
+    }).then(res => {
+        if (res.isConfirmed) {
+            deletesupervisor(id)
+        }
+    })
+}
+
+async function deletesupervisor(id) {
+
+    await axios.delete(`/api/supervisors/${id}`).then(res => {
+
+        Swal.fire({
+            title: 'deleted!',
+            text: 'supervisor Deleted Successfully..!',
+            icon: 'success',
+            showCancelButton: true
+        })
+        getsupervisors()
+    }).catch(err => {
+
+        Swal.fire({
+            title: 'error!',
+            text: 'something went wrong..!',
+            icon: 'error',
+            showCancelButton: true
+        })
+
+    })
+
+}
+
+onMounted(() => {
+    getsupervisors()
+    document.title = "Store | supervisors"
+
+})
 </script>
 
 <style>
