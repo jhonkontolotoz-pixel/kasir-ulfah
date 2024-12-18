@@ -4,146 +4,74 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Http\Resources\ProductResource;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\ProductRequest;
-use App\Models\Category;
-use App\Models\ProductBrand;
+use App\Http\Requests\Product\ProductRequest;
+use App\Http\Resources\Product\ProductCollection;
+use App\Http\Resources\Product\ProductResource;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+   
+    public function index(Request $request)
     {
 
-       $products = Product::latest()->get();
+       $products = Product::with('category')->latest()->paginate($request->limit ?? 10);
 
-       return view("admin.layouts.product.products" , ['products' => $products]);
+       return successResponse(new ProductCollection($products));
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $categories = Category::all('id','name');
-
-        $brands = ProductBrand::all('id','name');
-
-        return view("admin.layouts.product.create" , ['categories'=>$categories , 'brands' => $brands]);
-
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(ProductRequest $request)
     {
 
         $data = $request->validated();
-
-        $request->validate([
-            'image' => 'required|mimes:png,jpg,jpeg|max:2048'
-        ]);
-
-        $file_name = $request->file('image')->storePublicly('covers');
-
         $product = Product::create($data);
 
-        $image = $product->images()->create(['image'=>$file_name]);
+        //$product = Product::create([...$data,'sku'=>fake()->unique()->regexify('[A-Z0-9]{6}')]);
 
-        $request->session()->flash('saved' , '<strong>Product</strong> saved..!');
+        if($request->has('image'))
+        {
+            $file_name = $request->file('image')->store('products_covers');
 
-        return back();
+            $image = $product->images()->create(['image'=>$file_name]);
+        }
+
+        return simpleSuccessResponse(message: "Product Created Successfully");
+
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request, Product $product)
+ 
+    public function show( Product $product)
     {
 
-        return view("admin.layouts.product.product" , ['product'=>$product]);
-
-        //return new ProductResource($product);
+        return simpleSuccessResponse(new ProductResource($product));
 
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(product $product)
-    {
 
-
-        $categories = Category::all(['id','name']);
-
-        $brands = ProductBrand::all(['id','name']);
-
-        return view("admin.layouts.product.edit" , ['product' => $product,'categories'=>$categories , 'brands' => $brands]);
-
-
-
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(ProductRequest $request, Product $product)
     {
+
+        $product->update($request->validated());
 
 
         if($request->hasFile('image'))
         {
 
-            $request->validate([
-                'image' => 'required|mimes:png,jpg,jpeg|max:2048'
-            ]);
+            $file_name = $request->file('image')->store('covers');
 
-            $file_name = $request->file('image')->storePublicly('covers');
-
-            $image = $product->images()->create(['image'=>$file_name]);
+            $image = $product->images()->update(['image'=>$file_name]);
 
         }
 
-        $product->update($request->validated());
-
-        $request->session()->flash('edited' , 'Product Updated..!');
-
-        return back();
+        return simpleSuccessResponse(message: "Product Updated Successfully");
+       
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request)
+ 
+    public function destroy(Product $product)
     {
-
-        $product = Product::findOrFail($request->id);
         $product->delete();
-        return "deleted";
+
+        return simpleSuccessResponse(message: "Product Deleted Successfully");
     }
 }

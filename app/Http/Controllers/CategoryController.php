@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Category\CategoryRequest;
+use App\Http\Resources\Category\CategoriesCollection;
+use App\Http\Resources\Category\CategoriesResource;
 use Illuminate\Http\Request;
 use App\Models\Category;
 
@@ -12,23 +15,11 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::all();
+        $categories = Category::withCount('products')->paginate($request->limit ?? 10);
 
-        return response()->json($categories);
-
-       // return view("admin.layouts.category.categories" , ['categories' => $categories]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view("admin.layouts.category.create");
+        return successResponse(new CategoriesCollection($categories));
     }
 
     /**
@@ -37,68 +28,35 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
-        $data = $request->validate([
+        
+        Category::create($request->validated());
 
-            'name' => 'required|max:20|min:3|string',
-            'description' => 'max:100'
-
-        ]);
-
-        //$request->session()->flash('saved', "Category <strong>".$request->name . " </strong>Created..!");
-
-        Category::create($data);
-
-        return response()->json([
-            'message' => "Category <strong>".$request->name . " </strong>Created..!",
-            'status' => true
-        ],200);
-
-        //return back();
-
-
+       return simpleSuccessResponse(message:"Category Created Successfully");
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+  
     public function show(Category $category)
     {
-        return response()->json($category);
-
-       // return view("admin.layouts.category.category" , ['category'=>$category]);
+        return simpleSuccessResponse(new CategoriesResource($category->load('products')->loadCount('products')));
     }
 
-    public function edit(Category $category)
+    public function update(CategoryRequest $request,Category $category)
     {
+        $category->update($request->validated());
 
-        return response()->json($category);
-
-        //return view("admin.layouts.category.edit" , ['category' => $category]);
+        return simpleSuccessResponse(message:"Category Updated Successfully");
+        
     }
 
-    public function update(Request $request,Category $category)
+
+    public function destroy(Category $category)
     {
-        $category->update($request->only('name','description'));
+        $category->delete();
 
-        //$request->session()->flash('edited' , 'Category Updated Successfuly..');
-
-        return response()->json([
-            'message' => "Category <strong>".$request->name . " </strong>updated..!",
-            'status' => true
-        ],201);
-
-
-
-        //return back();
-
+        return simpleSuccessResponse(message:"Category Deleted Successfully");
+        
     }
-
-
-
 
 }

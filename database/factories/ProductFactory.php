@@ -18,11 +18,12 @@ class ProductFactory extends Factory
     public function definition()
     {
         return [
-            'title' => fake()->title(),
-            'description' => fake()->paragraph(4),
-            'price' => fake()->numberBetween(200, 1000),
-            'quantity'=> fake()->numberBetween(50,100),
-            'category_id' => Category::factory()
+            'title' => fake()->word(2),
+            'description' => fake()->paragraph(2),
+            'price' => fake()->randomFloat(2, 10, 1000),
+            'quantity'=> fake()->numberBetween(1,20),
+            'sku' => fake()->unique()->regexify('[A-Z0-9]{6}'),
+            'category_id' => fake()->numberBetween(1,5)
         ];
     }
 }

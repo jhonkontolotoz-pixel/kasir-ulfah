@@ -1,20 +1,16 @@
 
-import './assets'
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
-
 import './bootstrap';
 
 import { createApp , defineAsyncComponent} from 'vue/dist/vue.esm-bundler'
 
 import { getActiveLanguage, i18nVue } from 'laravel-vue-i18n';
-import moment from 'moment'
-import App from './App.vue'
-// Vuetify
 
+import App from './App.vue'
 
 import { createVuetify } from 'vuetify'
-//import * as components from 'vuetify/components'
+
 import * as directives from 'vuetify/directives'
 
 const vuetify = createVuetify({directives})

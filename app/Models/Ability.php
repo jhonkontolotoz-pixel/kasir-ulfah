@@ -11,14 +11,13 @@ class Ability extends Model
 {
     use HasFactory;
 
-    protected $table = 'abilities';
-
-    protected $guarded = [];
+    protected $fillable = ['name','label'];
 
     public function roles()
     {
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
+    
     public function user(){
 
         return $this->belongsToMany(User::class , "user_ability");

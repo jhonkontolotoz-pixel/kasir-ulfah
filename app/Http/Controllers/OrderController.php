@@ -3,8 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Events\OrderConfirmed;
+use App\Http\Requests\Order\OrderRequest;
+use App\Http\Requests\Order\OrderStatusUpdateRequest;
+use App\Http\Resources\Order\OrdersCollection;
+use App\Http\Resources\Order\OrdersResource;
+use App\Http\Services\OrderService;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,56 +18,43 @@ use Illuminate\Support\Facades\DB;
 class OrderController extends Controller
 {
 
-    public function orders()
+    public function index(Request $request)
     {
-        $orders = Order::latest()->get();
+        $orders = Order::with(['customer:id,name','user:id,name'])->withCount('orderItems')->latest()->paginate($request->limit ?? 10);
 
-        $orders->load("user.orders");
-
-        return view('admin.layouts.order.orders', ['orders' => $orders]);
+        return successResponse(new OrdersCollection($orders));
     }
 
-    public function confirm(Request $request)
+    public function show(Order $order)
+    {
+        return simpleSuccessResponse(new OrdersResource($order->loadCount('products')->load(['products','user:id,name','customer:id,name'])));
+    }
+
+    public function store(OrderRequest $request)
     {
 
-        $products = Cart::where('user_id', Auth::id())->get();
+        OrderService::CreateOrder($request->validated());
+        
+        return simpleSuccessResponse(message: "Order Created Successfully");
 
-        if ($products->count() <= 0) {
-            return back();
-        }
-
-            DB::transaction(function () use ($products) {
-
-            $total_price = $products->sum('price');
-
-            $data = [];
-
-            $items = $products->flatten()->pluck('quantity', 'product_id')->map(function ($value, $key) use ($data) {
-
-                return $data[$key] = ['quantity' => $value];
-
-            })->toArray();
-
-            $order = Order::Create([
-                'status' => "shipping",
-                'total_price' => $total_price,
-                'user_id' => Auth::id(),
-
-            ]);
-
-            $order->products()->attach($items);
-
-            Cart::where("user_id", Auth::id())->delete();
-
-            event(new OrderConfirmed($order));
-
-        });
-
-        $request->session()->put('cart_quantity', 0);
-
-        $request->session()->flash('orderconfirmed', '<strong>Order</strong> sent successfuly');
-
-        return back();
     }
+
+    public function updateOrderStatus(OrderStatusUpdateRequest $request , Order $order)
+    {
+        $order->update(['status' => $request->validated()]);
+
+        return simpleSuccessResponse(message: "Order Updated Successfully");
+
+    }
+
+    public function destroy( Order $order)
+    {
+        $order->delete();
+
+        return simpleSuccessResponse(message: "Order Deleted Successfully");
+
+    }
+
+
 
 }

@@ -18,9 +18,11 @@ return new class extends Migration
             $table->string("title");
             $table->text("description");
             $table->integer("quantity");
-            $table->decimal("price");
+            $table->decimal("price",unsigned:true);
+            $table->string('sku')->unique();
             $table->foreignId("category_id")->constrained()->onDelete("cascade")->onUpdate("cascade");
             $table->timestamps();
+            $table->softDeletes();
 
         });
     }

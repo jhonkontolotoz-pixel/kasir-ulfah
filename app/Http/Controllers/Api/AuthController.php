@@ -23,9 +23,7 @@ class AuthController extends Controller
 
             $token = auth()->user()->createToken('Token')->plainTextToken;
 
-            return response()->json([
-                'user' => Auth::user()->with('roles'), 'token' => $token
-            ]);
+            return simpleSuccessResponse($token);
         }
     }
 

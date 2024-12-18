@@ -5,14 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
-    protected $table_name = 'categories';
+    protected $casts = [
+        
+        'created_at' => 'datetime:Y-m-d h:i a',
+        'updated_at' => 'datetime:Y-m-d h:i a',
+    ];
 
-    protected $guarded = [];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['name','description'];
 
     public function products()
     {

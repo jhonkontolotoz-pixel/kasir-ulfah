@@ -26,7 +26,7 @@ import Checkout from '../Components/Guest/Checkout'
 
 const routes = [
     {
-        path: '/',
+        path: '/login',
         name: 'login',
         component: Login
     },
@@ -39,12 +39,12 @@ const routes = [
         path: '/forgot-password',
         name: 'forgot-password',
         component: ForgotPassword
-    },
+    }/* ,
     {
         path : '/:pathMatch(.*)*',
         name : 'NotFound',
         component : NotFound
-    }
+    } */
 ];
 
 export default routes;

@@ -32,7 +32,7 @@
                         {{ item.updated_at }}
                     </template>
                     <template v-slot:item.actions="{ item }">
-                        <v-icon size="small" class="me-2" @click="return">
+                        <v-icon size="small" class="me-2" @click="() => $router.push({name : 'admin.category.edit' , params : {id : item.id}})">
                             mdi-pencil
                         </v-icon>
                         <v-icon size="small" @click="return">

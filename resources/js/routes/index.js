@@ -14,7 +14,7 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach((to, from, next) => {
+/* router.beforeEach((to, from, next) => {
 
     if (to.meta.middleware == "admin" && !store.getters.isAdmin ) {
 
@@ -34,6 +34,6 @@ router.beforeEach((to, from, next) => {
     
 next()
 
-})
+}) */
 
 export default router

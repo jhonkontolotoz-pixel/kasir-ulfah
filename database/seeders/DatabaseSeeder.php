@@ -8,6 +8,7 @@ use Database\Seeders\CategorySeeder;
 use Database\Seeders\ProductSeeder;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,16 +19,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
-        Category::factory()->count(30)->create();
-       // Product::factory()->count(300)->create();
-
+        
+        $this->call([
+            CustomersSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
+            OrdersSeeder::class,
+            UsersSeeder::class,
+            OrdersProductsSeeder::class
+        ]);
 
     }
 }

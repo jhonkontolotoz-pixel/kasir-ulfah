@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer("phone")->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
