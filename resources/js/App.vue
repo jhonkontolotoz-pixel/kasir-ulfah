@@ -1,24 +1,19 @@
 <template>
-    <div>
-
         <component :is="layout"></component>
-
-    </div>
 </template>
 <script>
-    import StoreLayout from './Layouts/StoreLayout.vue'
+    import DefaultLayout from './Layouts/DefaultLayout.vue'
     import AdminLayout from './Layouts/AdminLayout.vue'
-    import SupervisorLayout from './Layouts/SupervisorLayout.vue'
 
     export default {
         components: {
-            StoreLayout,
-            AdminLayout,
-            SupervisorLayout
+            DefaultLayout,
+            AdminLayout
         },
         data: function () {
             return {
-                DefaultLayout: "StoreLayout"
+                DefaultLayout: "DefaultLayout",
+                isLoading : false
             }
         },
         computed: {

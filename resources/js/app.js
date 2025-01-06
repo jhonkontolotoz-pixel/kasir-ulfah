@@ -1,23 +1,16 @@
-
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
-import './bootstrap';
-
+import '@/bootstrap';
+import 'primeicons/primeicons.css'
 import { createApp , defineAsyncComponent} from 'vue/dist/vue.esm-bundler'
-
-import { getActiveLanguage, i18nVue } from 'laravel-vue-i18n';
-
+//import { getActiveLanguage, i18nVue } from 'laravel-vue-i18n';
+import router from '@/routes'
 import App from './App.vue'
-
-import { createVuetify } from 'vuetify'
-
-import * as directives from 'vuetify/directives'
-
-const vuetify = createVuetify({directives})
-
-import router from './routes'
-
-import store from './store/index.js'
+import PrimeVue from 'primevue/config';
+import Aura from '@primevue/themes/aura';
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import ToastService from 'primevue/toastservice';
+import Tooltip from 'primevue/tooltip';
+import ConfirmationService from 'primevue/confirmationservice';
 
 const app = createApp({
     components :{
@@ -25,13 +18,23 @@ const app = createApp({
     }
 })
 
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 
-app.use(i18nVue, {
-    lang: store.getters.getLang ,
+/* app.use(i18nVue, {
+    lang: 'en' ,
     resolve: lang => import(`../../lang/${lang}.json`),
+}) */
+
+app
+.use(pinia)
+.use(router)
+.use(PrimeVue, {
+    theme: {
+        preset: Aura
+    }
 })
-
-app.component('errors',defineAsyncComponent(()=> import('./Components/inc/ValidationErrors.vue')))
-
-app.use(store).use(router).use(vuetify).mount("#app")
-
+.use(ToastService)
+.use(ConfirmationService)
+.directive('tooltip', Tooltip)
+.mount("#app")

@@ -25,7 +25,8 @@ class ProductResource extends JsonResource
             'sku' => $this->sku,
             'quantity' => $this->quantity,
             'category_id' => $this->category_id,
-            'category_name' => $this->category->name,
+            'category_name' => $this->category?->name,
+            'image' => $this->whenLoaded('images' , fn () => $this->images()->latest()->first('image'))?->image,
             'created_at' => Carbon::parse($this->created_at)->format('Y-m-d h:i a')
         ];
     }

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Http\Requests\Product\ProductRequest;
 use App\Http\Resources\Product\ProductCollection;
 use App\Http\Resources\Product\ProductResource;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -14,7 +15,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
 
-       $products = Product::with('category')->latest()->paginate($request->limit ?? 10);
+       $products = Product::latest()->paginate($request->limit ?? 10);
 
        return successResponse(new ProductCollection($products));
 
@@ -24,15 +25,15 @@ class ProductController extends Controller
     {
 
         $data = $request->validated();
-        $product = Product::create($data);
 
-        //$product = Product::create([...$data,'sku'=>fake()->unique()->regexify('[A-Z0-9]{6}')]);
+        $product = Product::create($data);
 
         if($request->has('image'))
         {
-            $file_name = $request->file('image')->store('products_covers');
+            $file_name = $request->file('image')->storePublicly('images');
 
             $image = $product->images()->create(['image'=>$file_name]);
+
         }
 
         return simpleSuccessResponse(message: "Product Created Successfully");
@@ -54,13 +55,16 @@ class ProductController extends Controller
         $product->update($request->validated());
 
 
-        if($request->hasFile('image'))
+        if($request->has('image'))
         {
 
-            $file_name = $request->file('image')->store('covers');
+            $old_image = $product->images()->first()->image;
 
-            $image = $product->images()->update(['image'=>$file_name]);
+            $file_name = $request->file('image')->storePublicly('images' , ['disk' => 'public']);
 
+            $image = $product->images()->updateOrCreate(['image'=>$file_name]);
+
+            unlink(storage_path('app/public/'.$old_image));
         }
 
         return simpleSuccessResponse(message: "Product Updated Successfully");

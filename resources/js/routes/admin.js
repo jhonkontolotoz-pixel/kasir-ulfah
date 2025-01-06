@@ -1,196 +1,190 @@
-import Dashboard  from '../Components/Admin/pages/Dashboard.vue'
-import Categories from '../Components/Admin/pages/category/categories.vue'
-import Category from '../Components/Admin/pages/category/category.vue'
-import CategoryCreate from '../Components/Admin/pages/category/create.vue'
-import CategoryEdit from '../Components/Admin/pages/category/edit.vue'
-import Products from '../Components/Admin/pages/product/products.vue'
-import Product from '../Components/Admin/pages/product/product.vue'
-import ProductEdit from '../Components/Admin/pages/product/edit.vue'
-import ProductCreate from '../Components/Admin/pages/product/create.vue'
-import Orders from '../Components/Admin/pages/order/orders.vue'
-import Order from '../Components/Admin/pages/order/order.vue'
-import OrderCreate from '../Components/Admin/pages/order/create.vue'
-import OrderEdit from '../Components/Admin/pages/order/edit.vue'
-import Customers from '../Components/Admin/pages/customer/customers.vue'
-import Customer from '../Components/Admin/pages/customer/customer.vue'
-import CustomersCreate from '../Components/Admin/pages/customer/create.vue'
-import CustomersEdit from '../Components/Admin/pages/customer/edit.vue'
-import Supervisors from '../Components/Admin/pages/supervisor/supervisors.vue'
-import Supervisor from '../Components/Admin/pages/supervisor/supervisor.vue'
-import SupervisorsCreate from '../Components/Admin/pages/supervisor/create.vue'
-import SupervisorsEdit from '../Components/Admin/pages/supervisor/edit.vue'
-
-
 
 const routes = [
     {
         path: '/dashboard',
-        name: 'dashboard',
-        component: Dashboard,
+        name: 'admin.dashboard',
+        component: () => import('@/Components/Admin/pages/Dashboard.vue'),
         meta : {
-            middleware : "admin",
-            layout : "AdminLayout"
+            requiresAuth: true,
+            layout : "AdminLayout",
+            title : 'Dashboard'
         }
     },
     {
         path: '/admin/categories',
         name: 'admin.categories',
-        component: Categories,
+        component: () => import('@/Components/Admin/pages/category/categories.vue'),
         meta : {
-            middleware : "admin",
-            layout : "AdminLayout"
+            requiresAuth: true,
+            layout : "AdminLayout",
+            title : 'Categories'
         }
     },
     {
-        path: '/admin/category/:id(\\d+)',
-        name: 'admin.category',
-        component: Category,
+        path: '/admin/categories/:id(\\d+)',
+        name: 'admin.categories.category',
+        component: () => import('@/Components/Admin/pages/category/category.vue'),
         meta : {
-            middleware : "admin",
-            layout : "AdminLayout"
+            requiresAuth: true,
+            layout : "AdminLayout",
+
         }
     },
     {
-        path: '/admin/category/create',
+        path: '/admin/categories/create',
         name: 'admin.category.create',
-        component: CategoryCreate,
+        component: () => import('@/Components/Admin/pages/category/create.vue'),
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
     {
-        path: '/admin/category/:id(\\d+)/edit',
+        path: '/admin/categories/:id(\\d+)/edit',
         name: 'admin.category.edit',
-        component: CategoryEdit,
+        component: () => import('@/Components/Admin/pages/category/edit.vue'),
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
     {
         path: '/admin/products',
         name: 'admin.products',
-        component: Products,
+        component: () => import('@/Components/Admin/pages/product/products.vue'),
         meta : {
-            middleware : "admin",
-            layout : "AdminLayout"
+            requiresAuth: true,
+            layout : "AdminLayout",
+            title : 'Products'
         }
     },
     {
         path: '/admin/products/:id(\\d+)',
         name: 'admin.products.product',
-        component: Product,
+        component: () => import('@/Components/Admin/pages/product/product.vue'),
         meta : {
-            middleware : "admin",
-            layout : "AdminLayout"
+            requiresAuth: true,
+            layout : "AdminLayout",
+            title  : 'Products'
         }
     },
     {
         path: '/admin/products/create',
         name: 'admin.products.create',
-        component: ProductCreate,
+        component: () => import('@/Components/Admin/pages/product/create.vue'),
         meta : {
-            middleware : "admin",
-            layout : "AdminLayout"
+            requiresAuth: true,
+            layout : "AdminLayout",
+            title : 'Create Order'
         }
     },
     {
         path: '/admin/products/:id(\\d+)/edit',
         name: 'admin.products.edit',
-        component: ProductEdit,
+        component: () => import('@/Components/Admin/pages/product/edit.vue'),
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
     {
         path: '/admin/orders',
         name: 'admin.orders',
-        component: Orders,
+        component: () => import('@/Components/Admin/pages/order/orders.vue'),
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
     {
         path: '/admin/orders/:id(\\d+)',
-        name: 'order',
-        component: Order,
+        name: 'admin.orders.order',
+        component: () => import('@/Components/Admin/pages/order/order.vue'),
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
     {
-        path: '/admin/customers/:cid(\\d+)/orders/:oid(\\d+)/edit',
-        name: 'admin.customers.orders.edit',
-        component: OrderEdit,
+        path: '/admin/orders/:id(\\d+)/edit',
+        name: 'admin.orders.edit',
+        component: () => import('@/Components/Admin/pages/order/edit.vue'),
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
     {
-        path: '/admin/customers/:cid(\\d+)/orders/create',
-        name: 'admin.customers.orders.create',
-        component: OrderCreate,
+        path: '/admin/orders/create',
+        name: 'admin.orders.create',
+        component: () => import('@/Components/Admin/pages/order/create.vue'),
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
     {
         path: '/admin/customers',
         name: 'admin.customers',
-        component: Customers,
+        component: () => import('@/Components/Admin/pages/customer/customers.vue'),
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
     {
         path: '/admin/customers/create',
         name: 'admin.customers.create',
-        component: CustomersCreate,
+        component: () => import('@/Components/Admin/pages/customer/create.vue'),
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
     {
-        path: '/admin/customers/:cid(\\d+)/edit',
+        path: '/admin/customers/:id(\\d+)/edit',
         name: 'admin.customers.edit',
-        component: CustomersEdit,
+        component: () => import('@/Components/Admin/pages/customer/edit.vue'),
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
     {
         path: '/admin/customers/:id(\\d+)',
         name: 'admin.customers.customer',
-        component: Customer,
+        component: () => import('@/Components/Admin/pages/customer/customer.vue'),
         meta : {
-            middleware : "admin",
-            layout : "AdminLayout"
+            requiresAuth: true,
+            layout : "AdminLayout",
         }
     },
+    {
+        path: '/admin/cart',
+        name: 'admin.cart',
+        component: () => import('@/Components/Admin/pages/cart/cart.vue'),
+        meta : {
+            requiresAuth: true,
+            layout : "AdminLayout",
+            title : 'Cart'
+        }
+    }
+    /*
     {
         path: '/admin/supervisors',
         name: 'admin.supervisors',
         component: Supervisors,
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
-    {
+     {
         path: '/admin/supervisors/:id(\\d+)',
         name: 'admin.supervisors.supervisor',
         component: Supervisor,
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
@@ -199,7 +193,7 @@ const routes = [
         name: 'admin.supervisors.edit',
         component: SupervisorsEdit,
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
     },
@@ -208,11 +202,11 @@ const routes = [
         name: 'admin.supervisors.create',
         component: SupervisorsCreate,
         meta : {
-            middleware : "admin",
+            requiresAuth: true,
             layout : "AdminLayout"
         }
-    }
-
+    } */
+ 
 ];
 
 export default routes

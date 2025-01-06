@@ -47,7 +47,7 @@
                             <button :disabled="processing" @click.prevent="updateCustomer()"
                                 class="btn btn-primary btn-user btn-block">
                                 {{ processing ? "Saving..." : "Update" }}
-                                <img v-show="processing" src="/imgs/ajax.gif" alt="loading">
+                                <img v-show="processing" src="" alt="loading">
                             </button>
 
                         </form>

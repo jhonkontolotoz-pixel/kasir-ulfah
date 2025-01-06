@@ -1,117 +1,127 @@
 <template>
-    <!-- Begin Page Content -->
-    <div class="container-fluid">
+    <Toast />
 
-        <!-- Page header -->
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Categories</h1>
-
+    <div class="card flex justify-between">
+        <div>
+            <Breadcrumb :home="home" :model="items" class="mb-5 text-md">
+                <template #item="{ item, props }">
+                    <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+                        <a :href="href" v-bind="props.action" @click="navigate">
+                            <span :class="[item.icon, 'text-color']" />
+                            <span class="text-primary font-semibold">{{ item.label }}</span>
+                        </a>
+                    </router-link>
+                    <a v-else :href="item.url" :target="item.target" v-bind="props.action">
+                        <span class="text-surface-700 dark:text-surface-0">{{ item.label }}</span>
+                    </a>
+                </template>
+            </Breadcrumb>
         </div>
-
-        <!-- Content Row -->
-        <div class="row">
-
-            <div class="col-md-12">
-
-                <div class="card">
-                    <div class="card-header">
-                        <h6 class="h6 text-muted">Edit Category {{Category.name}}</h6>
-
-                        <div v-show="errors && errors.msg" class="alert alert-danger">
-                            {{ errors.msg }}
-                        </div>
-
-                        <div v-show="saved" class="alert alert-success alert-dismissible fade show" role="alert">
-                            <p v-html="message"></p>
-                            <button @click="!saved" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-
-                    </div>
-                    <div class="card-body">
-                        <form @submit.prevent="updateCategory()">
-
-                            <div class="form-group">
-                                <input type="text" class="form-control form-control-user" v-model="name"
-                                    placeholder="Enter Category Name..." required>
-                            </div>
-                            <div class="form-group">
-                                <textarea class="form-control form-control-user" v-model="desc"
-                                    placeholder="Description"></textarea>
-                            </div>
-                            <div class="text-center">
-                                <button :disabled="processing" type="submit" class=" btn btn-primary btn-user">
-                                    {{processing ? "Updating..." : "Save"}}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
     </div>
-    <!-- /.container-fluid -->
+
+    <div v-if="loading" class="card flex w-full p-3">
+        <form @submit.prevent="updateCategory"  class="w-full">
+            <div class="flex gap-3 flex-col">
+                        <div class="w-full mb-3">
+                            <Skeleton/>
+
+                        </div>
+                    <div class="w-full mb-3">
+                        <Skeleton/>
+                    </div>
+
+            </div>
+            <div class="w-16">
+                 <Skeleton/>
+            </div>
+        </form>
+    </div>
+
+    <div v-else class="card flex w-full p-3">
+        <form @submit.prevent="updateCategory"  class="w-full">
+            <div class="flex gap-3 flex-col">
+                        <div class="w-full mb-3">
+                            <label for="title" class=" font-medium mb-2 block">Name</label>
+                            <InputText inputId="title" v-model="category.name" type="text" placeholder="Name"
+                                class="w-full " />
+                        </div>
+                    <div class="w-full mb-3">
+                        <label for="title" class=" font-medium mb-2 block">Description</label>
+
+                        <Editor v-model="category.description" editorStyle="height: 320px" />
+                    </div>
+
+            </div>
+            <div class="w-full">
+                <Button type="submit" :label="updating ? 'Updating..' : 'Update'" icon="pi pi-save" :disabled="updating" severity="contrast"
+                    raised></Button>
+            </div>
+        </form>
+    </div>
 
 </template>
 
-<script>
-    export default {
-        data: function () {
-            return {
-                errors: {},
-                saved: false,
-                processing: false,
-                message: '',
-                name: '',
-                desc: '',
-                id: this.$route.params.id,
-                Category: {}
-            }
-        },
-        methods: {
-            updateCategory() {
-                this.processing = true
-                axios.put("/api/categories/" + this.id, {
-                    name: this.name,
-                    description: this.desc
-                }).then(res => {
-                    this.saved = true
-                    this.message = res.data.message
-                    this.name = ''
-                    this.desc = ''
-                }).catch(err => {
-                    this.errors = err.response.data
-                }).finally(() => {
-                    this.processing = false
-                })
-            },
-            getCategory() {
+<script setup>
+import { onMounted,ref} from 'vue';
+import { useAuthStore } from '@/store/auth';
+import { useToast } from 'primevue/usetoast';
+import { useRoute } from 'vue-router';
 
-                axios.get("/api/categories/" + this.id).then(res => {
+const toast = useToast();
+const auth = useAuthStore()
+const loading = ref(false)
+const updating = ref(false)
+const route = useRoute()
+const category = ref({
+    name: null,
+    description: null,
+})
 
-                    this.Category = res.data;
+const home = ref({
+    icon: 'pi pi-home',
+    route: '/dashboard'
+});
+const items = ref([
+    { label: 'Categories', icon: 'pi pi-list', route: { name: 'admin.categories' } },
+    { label: 'Edit Category' },
 
-                }).catch(err => {
-                    console.log(err)
-                })
-            }
-        },
-        watch: {
-            $route(to, from) {
-                this.id = this.$route.params.id
-                this.getCategory()
-                document.title = "Store | Category - " + this.name
-            }
-        },
-        mounted() {
-            this.getCategory()
-        }
+])
 
-    }
+
+async function getCategory(id) {
+
+    loading.value = true
+
+    await axios.get(`/api/categories/${id}`).then(res => {
+        category.value.name = res.data.data.name
+        category.value.description = res.data.data.description
+    }).catch(err => {
+        toast.add({ severity: 'error', summary: 'failed', detail: 'Failed to Fetch Record!', life: 4000 });
+    }).finally(() => {
+        loading.value = false
+    })
+
+}
+
+async function updateCategory() {
+
+updating.value = true
+
+await axios.post(`/api/categories`, category.value ).then(res => {
+    toast.add({ severity: 'success', summary: 'Saved', detail: 'Category Saved Successfully', life: 4000 });
+}).catch(err => {
+    toast.add({ severity: 'error', summary: 'failed', detail: 'Failed to Save Record!', life: 4000 });
+}).finally(() => {
+    updating.value = false
+})
+
+}
+
+onMounted(async () =>{
+
+    getCategory(route.params.id)
+})
 
 </script>
 
-<style>
-
-</style>
+<style scoped></style>

@@ -20,16 +20,18 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
-
         $request->authenticate();
 
-        $request->session()->regenerate();
+        if (Auth::check()) {
 
-        $token = auth()->user()->createToken('Token')->plainTextToken;
+            $request->session()->regenerate();
 
-        return response()->json([
-            'loggedIn' => true, 'token' => $token, 'user' => auth()->user()->id
-        ]);
+            //$token = auth()->user()->createToken('Token')->plainTextToken;
+
+            return simpleSuccessResponse(['user' => collect([
+                'name' => auth()->user()->name
+            ])]);
+        }
     }
 
     /**
@@ -42,9 +44,9 @@ class AuthenticatedSessionController extends Controller
     {
         Auth()->user()->tokens()->delete();
 
-        Auth::guard('web')->logout();
+        Auth::logout();
 
-        return response()->json(['message' => 'logged out'], 200);
-
+        return simpleSuccessResponse(message:"logged out");
+       
     }
 }

@@ -1,218 +1,237 @@
 <template>
-    <div>
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
+    <Toast />
 
-            <!-- Page header -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800">Products</h1>
-            </div>
-
-            <!-- Content Row -->
-            <div class="row">
-
-                <div class="col-md-12">
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="h6 text-muted">Edit Product</h6>
-                            <Errors :errors="errors"></Errors>
-                        </div>
-
-                        <div v-if="saved" class="alert alert-success alert-dismissible fade show m-3" role="alert">
-                            {{message}}
-                            <button @click="!saved" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-
-                    </div>
-                    <div class="card-body">
-                        <form enctype="multipart/form-data">
-
-                            <div class="form-group">
-                                <input type="text" class="form-control form-control-user" v-model="product.title"
-                                    placeholder="title" required>
-                            </div>
-                            <div>
-                                <img class="img-thumbnail" style="display: block; width:100%;height:70%"
-                                    :src="'/storage/'+ product.image" :alt="product.title"
-                                    :title="product.title" id="cover">
-                            </div>
-                            <div class="form-group">
-                                <input type="file" name="image" id="file" class="form-control form-control-user"
-                                    v-on:change="product.image = $event.target.files[0]" placeholder="image" required>
-                            </div>
-                            <div class="form-group">
-                                <textarea class="form-control form-control-user" v-model="product.description" required
-                                    placeholder="Description..."></textarea>
-                            </div>
-                            <div class="form-group">
-                                <input type="number" class="form-control form-control-user" v-model="product.price"
-                                    placeholder="price" required>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control form-control-user" v-model="product.quantity" type="number"
-                                    required placeholder="quantity">
-                            </div>
-
-                            <div class="form-group">
-                                <select v-model="product.category_id" class="form-control form-control-user">
-                                    <option value="" selected>--Category--</option>
-
-                                    <option v-for="category in categories" :key="category.id" :value="category.id">
-                                        {{category.name}}</option>
-                                </select>
-                            </div>
-                            <button :disabled="processing" @click.prevent="updateProduct()"
-                                class="btn btn-primary btn-user btn-block">
-                                {{ processing ? "Saving..." : "Save" }}
-                                <img v-show="processing" src="/imgs/ajax.gif" alt="loading">
-                            </button>
-                        </form>
+    <div class="card flex justify-between">
+        <div>
+            <Breadcrumb :home="home" :model="items" class="mb-5 text-md">
+                <template #item="{ item, props }">
+                    <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+                        <a :href="href" v-bind="props.action" @click="navigate">
+                            <span :class="[item.icon, 'text-color']" />
+                            <span class="text-primary font-semibold">{{ item.label }}</span>
+                        </a>
+                    </router-link>
+                    <a v-else :href="item.url" :target="item.target" v-bind="props.action">
+                        <span class="text-surface-700 dark:text-surface-0">{{ item.label }}</span>
+                    </a>
+                </template>
+            </Breadcrumb>
+        </div>
+    </div>
+    <div v-if="loadingProduct" class="w-full ">
+        <div class="flex gap-3">
+            <div class=" lg:w-3/4 md:w-3/4 w-full">
+                <div class="flex mb-4 ">
+                    <div class="w-full">
+                        <Skeleton />
                     </div>
                 </div>
+                <div class="flex justify-between gap-2 mb-4">
+                    <div class="w-full">
+                        <Skeleton />
+                    </div>
+                    <div class="w-full">
+                        <Skeleton />
+                    </div>
+                </div>
+
+                <div class="w-full h-16">
+                    <Skeleton />
+                </div>
+
+
             </div>
 
+            <div class="fileupload flex flex-col gap-4 lg:w-1/4 md:w-1/4 w-full">
+                <div class="w-full ">
+                    <Skeleton />
+                </div>
+                <div class="w-full h-5">
+                    <Skeleton />
+                </div>
+                <div class="w-full h-10">
+                    <Skeleton />
+                </div>
+
+            </div>
         </div>
-
     </div>
-    <!-- /.container-fluid -->
+    <div v-else class="card flex w-full p-3">
+        <form @submit.prevent="updateProduct" enctype="multipart/form-data" class="w-full">
+            <div class="flex gap-6 mb-3">
+
+                <div class="inputs lg:w-3/4 md:w-3/4 w-full">
+
+                    <div class="flex mb-4 ">
+                        <div class="w-full">
+
+                            <label for="title" class=" font-medium mb-2 block">Title</label>
+                            <InputText inputId="title" v-model="product.title" type="text" placeholder="Title"
+                                class="w-full " />
+                        </div>
+                    </div>
+                    <div class="flex justify-between gap-2 mb-4">
+                        <div class="w-full">
+                            <label for="price" class=" font-medium mb-2 block">Price</label>
+                            <InputNumber inputId="price" v-model="product.price" type="umber" placeholder="Price"
+                                class="w-full" />
+                        </div>
+                        <div class="w-full">
+                            <label for="quantity" class="font-medium mb-2 block">Quantity</label>
+                            <InputNumber inputId="quantity" v-model="product.quantity" type="number" placeholder="Quantity"
+                                class="w-full" />
+                        </div>
+                    </div>
+
+                    <div class="w-full">
+                        <Editor v-model="product.description" editorStyle="height: 320px" />
+                    </div>
 
 
+                </div>
+
+                <div class="fileupload flex flex-col gap-4 lg:w-1/4 md:w-1/4 w-full">
+                    <div class="w-full ">
+                        <label class=" font-medium mb-2 block">Category</label>
+                        <Select v-model="product.category_id" :options="categories" option-value="id" optionLabel="name"
+                            placeholder="Select a Category" class="!w-full md:w-56" />
+                    </div>
+                    <div class="w-full">
+                        <label class=" font-medium mb-2 block">Image</label>
+                        <template v-if="product.image">
+                            <img :src="'/storage/' + product?.image" alt="Product Image"
+                                class="shadow-md rounded-xl w-full sm:w-64" style="filter: grayscale(100%)" />
+
+                        </template>
+
+                        <template v-else>
+                            <img :src="'/storage/default.png'" alt="Product Image"
+                                class="shadow-md rounded-xl w-full sm:w-64" style="filter: grayscale(100%)" />
+                        </template>
+
+                    </div>
+                    <div class="w-full">
+                        <label class=" font-medium mb-2 block">Update Image</label>
+                        <FileUpload mode="basic" choose-label="Product Image" choose-icon="pi pi-upload"
+                            @select="onFileSelect" customUpload
+                            class="!w-full  !text-slate-600 !bg-none  !bg-transparent ring-gray-200 !border-gray-200 !py-2 !px-3 !m-0 ! !border-2 " />
+                        <img v-if="src" :src="src" alt="Image" class="shadow-md rounded-xl w-full sm:w-64"
+                            style="filter: grayscale(100%)" />
+                    </div>
+
+                </div>
+            </div>
+            <div class="flex">
+                <Button type="submit" :label="updating ? 'Updating' : 'Update'" icon="pi pi-save" :disabled="updating" severity="contrast"
+                    raised></Button>
+            </div>
+        </form>
+    </div>
 </template>
 
-<script>
-import Errors from '../../../inc/ValidationErrors.vue'
+<script setup>
+import { onMounted, ref } from 'vue';
+import { useAuthStore } from '@/store/auth';
+import { useToast } from 'primevue/usetoast';
+import { useRoute } from 'vue-router'
 
-    export default {
-        components : {
-            Errors
-        },
-        data: function () {
-            return {
-                product: {
-                    title: null,
-                    description: null,
-                    image: null,
-                    price: null,
-                    quantity: null,
-                    images :null,
-                    category_id: null,
-                    categories: null,
+const route = useRoute()
+const toast = useToast();
+const auth = useAuthStore()
+const categories = ref([])
+const updating = ref(false)
+const src = ref(null);
+const loadingProduct = ref(true)
+const product = ref({
+    title: null,
+    description: null,
+    price: null,
+    quantity: null,
+    category_id: null,
+    image: null,
+})
+const newImage = ref(null)
 
-                },
-                saved: false,
-                message: null,
-                processing: false,
-                categories: [],
-                brands: [],
-                errors: null,
-                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                ID: this.$route.params.id
-            }
-        },
-        methods: {
+const home = ref({
+    icon: 'pi pi-home',
+    route: '/dashboard'
+});
+const items = ref([
+    { label: 'Products', icon: 'pi pi-shopping-bag', route: { name: 'admin.products' } },
+    { label: 'Edit Product', icon: 'pi pi-plus' },
 
-            async getCategoriesAndBrands() {
-               await axios.get("/api/products/create").then(res => {
-
-                    this.categories = res.data.categories;
-                    this.brands = res.data.brands;
-
-                }).catch(err => {
-                    console.log(err)
-                })
-
-            },
-            async updateProduct() {
-                this.processing = true
-
-                delete this.product['category']
-                delete this.product['brand']
-                delete this.product['images']
-                delete this.product['created_at']
-                delete this.product['updated_at']
-
-                let formData = new FormData();
-
-                for (let [key , value] of Object.entries(this.product)){
-
-                    formData.append(key,value)
-
-                }
-
-                formData.append('_method', 'PATCH')
-                formData.append('_token', this.csrf)
-                console.table(formData)
-                await axios.post(`/api/products/${this.ID}`, formData, {
-                    headers : {
-                        'content-type' : 'multipart/form-data'
-                    }
-                })
-                    .then(res => {
-
-                        this.saved = true
-                        this.message = res.data.message
-
-                        Swal.fire({
-                            title: 'updated!',
-                            text: 'Product Updated Successfully..!',
-                            icon: 'success',
-                            showCancelButton: true
-                        })
-                        this.getProduct()
-
-                    }).catch(err => {
-
-                        this.errors = err.response.data.errors
+])
 
 
-                    }).finally(() => {
-                        this.processing = false
-                    })
-
-            },
-            async getProduct() {
-               await axios.get("/api/products/" + this.ID).then(res => {
-
-                    this.product = res.data.product
-
-                    document.title = "Store | Edit - " + this.product.title
-
-                    this.product.image = res.data.product.images[0].image
+async function getCategories() {
+    await axios.get("/api/categories")
+        .then(res => { categories.value = res.data.data })
+}
 
 
-                }).catch(err => {
-                    console.log(err)
-                })
+async function getProduct() {
 
-            }
-        },
-        mounted() {
-            this.getCategoriesAndBrands()
-            this.getProduct()
-            document.title = "Store | Product - Edit"
+    loadingProduct.value = true
+    await axios.get(`/api/products/${route.params.id}`).then(res => {
+        product.value = res.data.data
+    }).catch(err => {
+        toast.add({ severity: 'error', summary: 'failed', detail: 'Failed to Get Record!', life: 4000 });
+    }).finally(() => {
+        
+        loadingProduct.value = false
+    })
 
-            $("#file").change(function () {
-
-                    $("#cover-thumbnail").removeClass("d-none");
-                    const file = this.files[0];
-                    if (file) {
-                        let reader = new FileReader();
-                        reader.onload = function (event) {
-                            $("#cover")
-                                .attr("src", event.target.result);
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
+}
 
 
-        }
+async function updateProduct() {
 
+    updating.value = true
+
+    const formData = new FormData();
+
+    if (newImage.value) {
+        product.value.image = newImage.value
+    }else{
+      delete product.value.image
     }
+
+    for (const key in product.value) {
+        formData.append(key, product.value[key])
+    }
+
+    formData.append('_method', 'put')
+
+    await axios.post(`/api/products/${route.params.id}`, formData).then(res => {
+        toast.add({ severity: 'success', summary: 'Updated', detail: 'Product Updated Successfully', life: 4000 });
+        getProduct()
+    }).catch(err => {
+        toast.add({ severity: 'error', summary: 'failed', detail: 'Failed to Update Record!', life: 4000 });
+    }).finally(() => {
+        updating.value = false
+    })
+
+}
+
+function onFileSelect(event) {
+    const file = event.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+        src.value = e.target.result;
+    };
+
+    newImage.value = file
+    reader.readAsDataURL(file);
+}
+
+onMounted(async () => {
+    await getCategories()
+    await getProduct()
+})
+
+
 
 </script>
 
-<style>
-
-</style>
+<style scoped></style>

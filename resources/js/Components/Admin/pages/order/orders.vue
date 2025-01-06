@@ -12,36 +12,6 @@
 
             <div class="col-md-12">
 
-                <v-card eleveation="10">
-
-                    <template v-slot:text>
-                        <v-text-field v-model="search" label="Search" prepend-inner-icon="mdi-magnify" single-line
-                            variant="outlined" hide-details>
-                        </v-text-field>
-                    </template>
-
-                    <v-data-table hover :loading="loading" :headers="headers" :items="orders" :search="search">
-                        <template v-slot:loading>
-                            <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
-                        </template>
-                        <template v-slot:item.total_price="{ item }">
-                            <v-icon size="small" class="m-0">mdi-currency-usd</v-icon>
-                            {{ item.total_price }}
-                        </template>
-                        <template v-slot:item.created_at="{ item }">
-                            {{ item.created_at }}
-                        </template>
-
-                        <template v-slot:item.actions="{ item }">
-                            <v-icon size="small" class="me-2" @click="return">
-                                mdi-pencil
-                            </v-icon>
-                            <v-icon size="small" @click="warning(item.id)">
-                                mdi-delete
-                            </v-icon>
-                        </template>
-                    </v-data-table>
-                </v-card>
             </div>
         </div>
     </div>
@@ -53,13 +23,6 @@ import {
     ref
 } from 'vue';
 
-import {
-    VDataTable,
-    VCard,
-    VIcon,
-    VSkeletonLoader,
-    VTextField
-} from 'vuetify/components'
 
 
 const headers = ref([{

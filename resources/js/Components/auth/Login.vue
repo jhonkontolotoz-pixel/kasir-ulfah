@@ -1,153 +1,73 @@
 <template>
+    <Toast class=" rounded"/>
+        <div class="p-6 text-slate-100 bg-gray-50 backdrop-filter backdrop-blur-[40px] bg-opacity-10 rounded-md md:w-6/12 lg:w-4/12 mx-auto">
+            <div class="text-center mb-8">
+                <div class="text-slate-100 dark:text-surface-0 text-3xl font-medium mb-4">Welcome Back</div>
+            </div>
+            
+            <div >
+                 <label for="email1" class=" font-medium mb-2 block">Email</label>
+                     <InputText :invalid="loginfailed" inputId="email" v-model="creds.email" type="text"
+                    placeholder="Email address" class="w-full mb-4"/>
+ 
 
-    <div class="col-md-12 col-lg-12 col-sm-12 ">
-        <div class="row">
-            <div class="container">
-                <!-- Outer Row -->
-                <div class="row justify-content-center">
+                <label for="password1" class=" dark:text-surface-0 font-medium mb-2 block ">Password</label>
+                <Password toggleMask :feedback="false" :invalid="loginfailed" inputId="password1" v-model="creds.password"
+                    type="password" placeholder="Password"
+                    class="w-full mb-4 " input-class="w-full bg-none bg-transparent placeholder-slate-100" />
 
-                    <div class=" col-md-6">
-
-                        <div class="card o-hidden border-0 shadow-lg my-5">
-                            <div class="card-body p-0">
-                                <!-- Nested Row within Card Body -->
-                                <div class="row">
-
-                                    <div class="col-md-12">
-
-                                        <div class="p-5">
-                                            <div class="text-center">
-                                                <h1 class="h4 text-gray-900 mb-4 text-capitalize">{{$t("Welcome Back!")}}
-                                                </h1>
-                                            </div>
-                                            <Errors :errors="errors"></Errors>
-
-                                            <form class="user" @submit.prevent="login" method="post">
-
-                                                <input type="hidden" name="_token" :value="csrf">
-                                                <div class="form-group">
-                                                    <input type="email" class="form-control form-control-user"
-                                                        v-model="creds.email" id="exampleInputEmail" name="email"
-                                                        aria-describedby="emailHelp" :placeholder="emailplaceholder"                                                 required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <input type="password" class="form-control form-control-user"
-                                                        v-model="creds.password" id="exampleInputPassword"
-                                                        name="password" :placeholder="passwordplaceholder" required >
-                                                </div>
-                                                <div class="form-group">
-                                                    <div class="custom-control custom-checkbox small">
-                                                        <input type="checkbox" class="custom-control-input"
-                                                            id="customCheck" name="remember">
-                                                        <label class="custom-control-label"
-                                                            for="customCheck">{{$t('r-me')}}</label>
-                                                    </div>
-                                                </div>
-                                                <button :disabled=processing
-                                                    class="btn btn-primary btn-user btn-block text-capitalize">
-                                                    {{processing ? $t('login')+"..." : $t('login')}}
-                                                </button>
-                                            </form>
-                                            <hr>
-                                            <div class="text-center">
-                                                <router-link class="small" :to="{name :'forgot-password'}">
-                                                    {{$t('forgot-password')}}</router-link>
-                                            </div>
-                                            <div class="text-center">
-                                                <router-link class="small" :to="{ name : 'register'}">
-                                                    {{$t('create account')}}
-                                                </router-link>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                <div class="flex items-center justify-between mb-12">
+                    <div class="flex items-center">
+                        <Checkbox inputId="rememberme1" name="rememberme" v-model="creds.remember_me" :binary="true"
+                            class="mr-2 bg-transparent" />
+                        <label for="rememberme1">Remember me</label>
                     </div>
-
+                    <a class="font-medium no-underline ml-2  text-right cursor-pointer">Forgot password?</a>
                 </div>
-
+<div class="flex items-center justify-center ">
+                <Button label="Sign In" :disabled="loading" @click.prevent="login" icon="pi pi-user" severity="success" class="!outline-none !border-none" />
+</div>
             </div>
         </div>
-    </div>
-
+   
 </template>
+<script setup>
 
-<script>
-import Errors from '../inc/ValidationErrors.vue'
+import { ref } from 'vue';
+import { useAuthStore } from '@/store/auth';
+import { useToast } from "primevue/usetoast";
+import {useRouter} from 'vue-router'
+ 
+const creds = ref({
+    email: '',
+    password: '',
+    remember_me: false
+})
 
-    import {
-        mapActions,
-        mapGetters
-    } from 'vuex'
-    import { wTrans } from 'laravel-vue-i18n'
+const toast = useToast();
+const loading = ref(false)
+const loginfailed = ref(false)
+const authStore = useAuthStore()
+const router = useRouter()
 
-    export default {
-        components:{
-            Errors
-        },
-        data() {
-            return {
-                errors: null,
-                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                processing: false,
-                creds: {
-                    email: 'san@houty.com',
-                    password: 'mafifi96',
-                },
-                passwordplaceholder : wTrans("password"),
-                emailplaceholder : wTrans("email")
-            }
-        },
-        methods: {
-            ...mapActions({
-                signIn: 'login',
-            }),
-            async login() {
-                this.processing = true
-                await axios.get('/sanctum/csrf-cookie')
-                await axios.post('/api/login', this.creds).then(res => {
+const login = async () => {
 
-                    window.axios.defaults.headers.common = {
-                        'Authorization': `Bearer ${res.data.token}`
-                    }
+    loading.value = true
+    await axios.get("sanctum/csrf-cookie")
+    await axios.post("api/login", creds.value)
+        .then(res => { 
+            authStore.login(res.data.data)
+            router.push({name : 'admin.dashboard'})
+        })
+        .catch(err => {
+            loginfailed.value = true;
+            console.log(err)
+            toast.add({ severity: 'error', summary: 'Login Failed', detail: 'Invalid Email or Password', life: 5000 });
+        })
+        .finally(() => {
+            loading.value = false
+        })
+}
 
-                    this.signIn()
-
-                }).catch(err => {
-                    this.errors = err.response.data.errors;
-                    console.log(err)
-                }).finally(() => {
-                    this.processing = false
-                })
-            },
-            redirectAuth() {
-                if (this.$store.getters.isAdmin) {
-                    this.$router.push({
-                        name: 'dashboard'
-                    })
-
-                } else if (this.$store.getters.isSupervisor) {
-                    this.$router.push({
-                        name: 'supervisor.dashboard'
-                    })
-                }
-            }
-
-        },
-        watch: {
-            '$store.getters.authenticated': function () {
-                this.redirectAuth()
-            }
-        },
-        created() {
-            document.title = "Store | Login"
-        },
-        mounted() {
-            this.redirectAuth()
-
-        }
-    }
 
 </script>
