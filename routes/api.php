@@ -34,6 +34,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('customers', CustomerController::class);
     Route::apiResource('orders', OrderController::class);
     Route::get('counts',[DashboardController::class , 'index']);
+    Route::get('salesChart',[DashboardController::class , 'salesChart']);
+    Route::get('ordersStatusChart',[DashboardController::class , 'ordersStatusChart']);
+    Route::get('revenueChart',[DashboardController::class , 'revenueChart']);
+    
 });
 
 Route::post("/login", [AuthenticatedSessionController::class, 'store']);

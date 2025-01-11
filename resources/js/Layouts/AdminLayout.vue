@@ -1,5 +1,5 @@
 <template>
-    <div class="wrapper flex justify-center">
+    <div class="wrapper flex justify-center !font-mono antialiased tracking-wide">
         <div class="sidebar bg-white text-sm leading-3 fixed left-0 top-0 bottom-0 border-r transition-width duration-500 ease-in-out !overflow-hidden z-50"
             :class="{ 'lg:w-1/6 md:w-1/6 ': isOpenSidebar, 'w-0': !isOpenSidebar }">
             <Sidebar />
@@ -29,7 +29,7 @@
                 </div>
             </nav>
             <div class="px-6 pb-6">
-                <div class="card shadow-lg shadow-slate-400 border rounded px-3">
+                <div class="card shadow-lg shadow-slate-100 border rounded p-3">
                     <router-view ></router-view>
                 </div> 
             </div>

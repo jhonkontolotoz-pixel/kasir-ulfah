@@ -80,14 +80,12 @@
                         {{ index + 1 }}
                     </template>
                     </Column>
-                <Column field="sku" header="Code" style="width: 15%">
-
-                </Column>
                 <Column field="image" header="Image" sortable style="width: 10%">
                     <template #body="slotProps">
-                        <router-link :to="{name : 'admin.products.product' , params : {id : slotProps.data.id}}"><img class="block w-7 h-7 rounded" alt="cover" :src="slotProps.data?.image ? '/storage/'+ slotProps.data?.image : '/storage/default.png'"></router-link>
+                        <router-link :to="{name : 'admin.products.product' , params : {id : slotProps.data.id}}"><img class="block w-7 h-7 rounded-sm" alt="cover" :src="slotProps.data?.image ? '/storage/'+ slotProps.data?.image : '/storage/default.png'"></router-link>
                     </template>
                 </Column>
+                <Column field="sku" header="SKU" style="width: 15%"></Column>
                 <Column field="title" header="Title" sortable style="width: 25%">
                 </Column>
                 <Column field="price" header="Price" sortable style="width: 5%">

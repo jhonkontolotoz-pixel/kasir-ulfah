@@ -2,7 +2,7 @@
 <div class="h-16 border-b flex justify-center items-center">
   
 </div>
-    <ul class="text-gray-600 py-3 p-2 flex justify-start flex-col gap-2 font-medium size tex-md tracking-wide text-nowrap">
+    <ul class="text-gray-600 py-3 p-2 flex justify-start  flex-col gap-2 font-semibold text-md tracking-wide text-nowrap">
         <li class="hover:text-indigo-500 "><router-link class="block pl-1 pr-3 py-2.5" :to="{ name: 'admin.dashboard' }"><span class="pi pi-home px-2"></span>Dashboard</router-link></li>
         <li class="hover:text-indigo-500 "><router-link class="block pl-1 pr-3 py-2.5" :to="{ name: 'admin.categories' }"><span class="pi pi-list px-2"></span>Categories</router-link></li>
         <li class="hover:text-indigo-500 "><router-link class="block pl-1 pr-3 py-2.5" :to="{ name: 'admin.products' }"><span class="pi pi-shopping-bag px-2"></span>Products</router-link></li>

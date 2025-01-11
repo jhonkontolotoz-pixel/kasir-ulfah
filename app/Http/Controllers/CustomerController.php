@@ -36,7 +36,7 @@ class CustomerController extends Controller
     {
         Customer::create($request->validated());
 
-        return simpleSuccessResponse(message:"Customer Created Successfully");
+        return successResponse(message:"Customer Created Successfully");
 
     }
 
@@ -48,7 +48,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        return simpleSuccessResponse(new CustomersResource($customer->loadCount('orders')));
+        return successResponse(new CustomersResource($customer->loadCount('orders')));
     }
 
 
@@ -63,7 +63,7 @@ class CustomerController extends Controller
     {
         $customer->update($request->validated());
 
-        return simpleSuccessResponse(message:"Customer Updated Successfully");
+        return successResponse(message:"Customer Updated Successfully");
 
     }
 
@@ -77,6 +77,6 @@ class CustomerController extends Controller
     {
         $customer->delete();
 
-        return simpleSuccessResponse(message:"Customer Deleted Successfully");
+        return successResponse(message:"Customer Deleted Successfully");
     }
 }

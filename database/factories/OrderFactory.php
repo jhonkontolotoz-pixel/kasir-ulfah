@@ -24,6 +24,7 @@ class OrderFactory extends Factory
             'payment_method' => $this->faker->randomElement(['cash', 'card']),
             'user_id' => User::inRandomOrder()->first()->id ?? User::factory(),
             'customer_id' => Customer::inRandomOrder()->first()->id ?? Customer::factory(),
+            'created_at' => fake()->dateTimeBetween()
 
         ];
     }

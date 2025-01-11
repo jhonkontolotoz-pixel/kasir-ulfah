@@ -14,7 +14,7 @@ if (!function_exists('successResponse')) {
     	$response = [
             'success' => true,
             'data'    => $data,
-            'pagination' =>  $data->total() > 0  ? [
+            'pagination' =>  HasPagination($data) ? [
                 'total' => $data->total(),
                 'per_page' => $data->perPage(),
                 'current_page' => $data->currentPage(),
@@ -24,27 +24,6 @@ if (!function_exists('successResponse')) {
         ];
 
         if (is_array($additional)) $response = array_merge($response, $additional);
-        return response($response, 200);
-    }
-
-}
-
-
-if (!function_exists('simpleSuccessResponse')) {
-    /**
-     * Returns Success Response Array
-     *
-     * @param mixed data Inide response data
-     * @return array
-     */
-    function simpleSuccessResponse($data = null, $message = null)
-    {
-
-    	$response = [
-            'success' => true,
-            'data'    => $data,
-            'message' => $message,
-        ];
         return response($response, 200);
     }
 
@@ -63,5 +42,16 @@ if (!function_exists('failMessageResponse')) {
             'success' => false,
             'message' => $message
         ], 400);
+    }
+}
+
+if (!function_exists('HasPagination')) {
+    function HasPagination($data)
+    {
+        try {
+            return $data->total() >= 0 ? true : false;
+        } catch (\Throwable $th) {
+            return  false;
+        }
     }
 }

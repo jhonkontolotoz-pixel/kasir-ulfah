@@ -62,7 +62,7 @@ class Order extends Model
         // Generate Code when creating a order
         static::creating(function ($order) {
             $order->code = $order->generateCode();
-            $order->user_id = auth()->user()->id;
+            $order->user_id = auth()->user()->id ?? 1;
         });
     }
 

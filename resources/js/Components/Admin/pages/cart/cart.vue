@@ -19,7 +19,7 @@
             </Breadcrumb>
         </div>
         <div class="flex gap-2">
-            <Button v-tooltip.bottom="{ value: 'Clear All Products From Cart', pt: { text: '!text-[0.7rem]' } }"
+            <Button v-if="cart.getCart.length" v-tooltip.bottom="{ value: 'Clear All Products From Cart', pt: { text: '!text-[0.7rem]' } }"
                 variant="text" type="text" class="self-center" severity="contrast" icon="pi pi-trash"
                 @click.prevent="clearCart()" />
 

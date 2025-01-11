@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
 
             //$token = auth()->user()->createToken('Token')->plainTextToken;
 
-            return simpleSuccessResponse(['user' => collect([
+            return successResponse(['user' => collect([
                 'name' => auth()->user()->name
             ])]);
         }
@@ -46,7 +46,7 @@ class AuthenticatedSessionController extends Controller
 
         Auth::logout();
 
-        return simpleSuccessResponse(message:"logged out");
+        return successResponse(message:"logged out");
        
     }
 }

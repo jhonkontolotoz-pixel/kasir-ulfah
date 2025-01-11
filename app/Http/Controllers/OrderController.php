@@ -27,7 +27,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        return simpleSuccessResponse(new OrdersResource($order->loadCount('products')->load(['products','user:id,name','customer:id,name'])));
+        return successResponse(new OrdersResource($order->loadCount('products')->load(['products','user:id,name','customer:id,name'])));
     }
 
     public function store(OrderRequest $request)
@@ -35,7 +35,7 @@ class OrderController extends Controller
 
         OrderService::CreateOrder($request->validated());
         
-        return simpleSuccessResponse(message: "Order Created Successfully");
+        return successResponse(message: "Order Created Successfully");
 
     }
 
@@ -43,7 +43,7 @@ class OrderController extends Controller
     {
         $order->update(['status' => $request->validated()]);
 
-        return simpleSuccessResponse(message: "Order Updated Successfully");
+        return successResponse(message: "Order Updated Successfully");
 
     }
 
@@ -51,7 +51,7 @@ class OrderController extends Controller
     {
         $order->delete();
 
-        return simpleSuccessResponse(message: "Order Deleted Successfully");
+        return successResponse(message: "Order Deleted Successfully");
 
     }
 

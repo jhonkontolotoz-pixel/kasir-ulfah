@@ -33,20 +33,20 @@ class CategoryController extends Controller
         
         Category::create($request->validated());
 
-       return simpleSuccessResponse(message:"Category Created Successfully");
+       return successResponse(message:"Category Created Successfully");
     }
 
   
     public function show(Category $category)
     {
-        return simpleSuccessResponse(new CategoriesResource($category->load('products')->loadCount('products')));
+        return successResponse(new CategoriesResource($category->load('products')->loadCount('products')));
     }
 
     public function update(CategoryRequest $request,Category $category)
     {
         $category->update($request->validated());
 
-        return simpleSuccessResponse(message:"Category Updated Successfully");
+        return successResponse(message:"Category Updated Successfully");
         
     }
 
@@ -55,7 +55,7 @@ class CategoryController extends Controller
     {
         $category->delete();
 
-        return simpleSuccessResponse(message:"Category Deleted Successfully");
+        return successResponse(message:"Category Deleted Successfully");
         
     }
 

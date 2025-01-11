@@ -1,4 +1,3 @@
-
 const routes = [
     {
         path: '/dashboard',
@@ -7,7 +6,7 @@ const routes = [
         meta : {
             requiresAuth: true,
             layout : "AdminLayout",
-            title : 'Dashboard'
+            title : 'Dashboard',
         }
     },
     {
@@ -27,6 +26,7 @@ const routes = [
         meta : {
             requiresAuth: true,
             layout : "AdminLayout",
+            title : "Categories"
 
         }
     },
@@ -36,7 +36,8 @@ const routes = [
         component: () => import('@/Components/Admin/pages/category/create.vue'),
         meta : {
             requiresAuth: true,
-            layout : "AdminLayout"
+            layout : "AdminLayout",
+            title : "Categories Create"
         }
     },
     {
@@ -45,7 +46,8 @@ const routes = [
         component: () => import('@/Components/Admin/pages/category/edit.vue'),
         meta : {
             requiresAuth: true,
-            layout : "AdminLayout"
+            layout : "AdminLayout",
+            title : "Categories Edit"
         }
     },
     {
@@ -75,7 +77,7 @@ const routes = [
         meta : {
             requiresAuth: true,
             layout : "AdminLayout",
-            title : 'Create Order'
+            title : 'Create Product',
         }
     },
     {
@@ -84,7 +86,8 @@ const routes = [
         component: () => import('@/Components/Admin/pages/product/edit.vue'),
         meta : {
             requiresAuth: true,
-            layout : "AdminLayout"
+            layout : "AdminLayout",
+            title : "Products Edit"
         }
     },
     {
@@ -93,7 +96,8 @@ const routes = [
         component: () => import('@/Components/Admin/pages/order/orders.vue'),
         meta : {
             requiresAuth: true,
-            layout : "AdminLayout"
+            layout : "AdminLayout",
+            title : "Orders"
         }
     },
     {
@@ -102,7 +106,8 @@ const routes = [
         component: () => import('@/Components/Admin/pages/order/order.vue'),
         meta : {
             requiresAuth: true,
-            layout : "AdminLayout"
+            layout : "AdminLayout",
+            title : "Orders"
         }
     },
     {
@@ -111,7 +116,8 @@ const routes = [
         component: () => import('@/Components/Admin/pages/order/edit.vue'),
         meta : {
             requiresAuth: true,
-            layout : "AdminLayout"
+            layout : "AdminLayout",
+            titel : "Orders Edit"
         }
     },
     {
@@ -120,7 +126,8 @@ const routes = [
         component: () => import('@/Components/Admin/pages/order/create.vue'),
         meta : {
             requiresAuth: true,
-            layout : "AdminLayout"
+            layout : "AdminLayout",
+            title : "Orders Create"
         }
     },
     {
@@ -129,7 +136,8 @@ const routes = [
         component: () => import('@/Components/Admin/pages/customer/customers.vue'),
         meta : {
             requiresAuth: true,
-            layout : "AdminLayout"
+            layout : "AdminLayout",
+            title : "Customers"
         }
     },
     {
@@ -138,7 +146,8 @@ const routes = [
         component: () => import('@/Components/Admin/pages/customer/create.vue'),
         meta : {
             requiresAuth: true,
-            layout : "AdminLayout"
+            layout : "AdminLayout",
+            title : "Customers Create"
         }
     },
     {
@@ -147,7 +156,8 @@ const routes = [
         component: () => import('@/Components/Admin/pages/customer/edit.vue'),
         meta : {
             requiresAuth: true,
-            layout : "AdminLayout"
+            layout : "AdminLayout",
+            title : "Customer Edit"
         }
     },
     {
@@ -157,6 +167,7 @@ const routes = [
         meta : {
             requiresAuth: true,
             layout : "AdminLayout",
+            title : 'Customers'
         }
     },
     {
@@ -168,45 +179,17 @@ const routes = [
             layout : "AdminLayout",
             title : 'Cart'
         }
-    }
-    /*
-    {
-        path: '/admin/supervisors',
-        name: 'admin.supervisors',
-        component: Supervisors,
-        meta : {
-            requiresAuth: true,
-            layout : "AdminLayout"
-        }
-    },
-     {
-        path: '/admin/supervisors/:id(\\d+)',
-        name: 'admin.supervisors.supervisor',
-        component: Supervisor,
-        meta : {
-            requiresAuth: true,
-            layout : "AdminLayout"
-        }
     },
     {
-        path: '/admin/supervisors/:id(\\d+)/edit',
-        name: 'admin.supervisors.edit',
-        component: SupervisorsEdit,
+        path: '/admin/pos',
+        name: 'admin.pos',
+        component: () => import('@/Components/Admin/pages/pos/pos.vue'),
         meta : {
             requiresAuth: true,
-            layout : "AdminLayout"
+            layout : "AdminLayout",
+            titlle : "POS"
         }
-    },
-    {
-        path: '/admin/supervisors/create',
-        name: 'admin.supervisors.create',
-        component: SupervisorsCreate,
-        meta : {
-            requiresAuth: true,
-            layout : "AdminLayout"
-        }
-    } */
- 
+    } 
 ];
 
 export default routes

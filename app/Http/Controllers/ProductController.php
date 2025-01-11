@@ -36,7 +36,7 @@ class ProductController extends Controller
 
         }
 
-        return simpleSuccessResponse(message: "Product Created Successfully");
+        return successResponse(message: "Product Created Successfully");
 
     }
 
@@ -44,7 +44,7 @@ class ProductController extends Controller
     public function show( Product $product)
     {
 
-        return simpleSuccessResponse(new ProductResource($product));
+        return successResponse(new ProductResource($product));
 
     }
 
@@ -67,7 +67,7 @@ class ProductController extends Controller
             unlink(storage_path('app/public/'.$old_image));
         }
 
-        return simpleSuccessResponse(message: "Product Updated Successfully");
+        return successResponse(message: "Product Updated Successfully");
        
     }
 
@@ -76,6 +76,6 @@ class ProductController extends Controller
     {
         $product->delete();
 
-        return simpleSuccessResponse(message: "Product Deleted Successfully");
+        return successResponse(message: "Product Deleted Successfully");
     }
 }
