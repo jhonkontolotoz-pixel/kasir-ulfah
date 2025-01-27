@@ -19,6 +19,8 @@
             </Breadcrumb>
         </div>
         <div class="flex gap-2">
+            <Button v-tooltip.bottom="{ value: 'Clear Filters', pt: { text: '!text-[0.7rem]' } }" variant="text" type="text"
+                class="self-center" severity="contrast" icon="pi pi-filter-slash" @click="clearFilter()" />
             <Button v-tooltip.bottom="{ value: 'Create Category', pt: { text: '!text-[0.7rem]' } }" variant="text"
                 type="text" class="self-center" as="router-link" severity="contrast" icon="pi pi-plus"
                 to="/admin/categories/create" />
@@ -31,55 +33,64 @@
 
 
     </div>
+    <div class="card">
 
 
-    <template v-if="loading">
-        <DataTable :value="dummyCategories" tableStyle="min-width: 50rem;" class="text-sm">
-            <Column field="id" header="Code" style="width: 5%">
-                <template #body>
-                    <Skeleton></Skeleton>
-                </template>
-            </Column>
-            <Column field="name" header="Name" sortable style="width: 25%">
-                <template #body>
-                    <Skeleton></Skeleton>
-                </template>
-            </Column>
-            <Column field="products_count" header="Products Count" sortable style="width: 5%">
-                <template #body>
-                    <Skeleton></Skeleton>
-                </template>
-            </Column>
+        <DataTable v-model:filters="filters" filterDisplay="menu" dataKey="id" :loading="loading" :value="categories"
+            tableStyle="min-width: 50rem;" @sort="sortData($event)" class="text-sm">
 
-            <Column field="created_at" header="Created At" style="width: 15%">
-                <template #body>
-                    <Skeleton></Skeleton>
-                </template>
-            </Column>
-        </DataTable>
-    </template>
-    <template v-else>
-        <DataTable :value="categories" tableStyle="min-width: 50rem;" class="text-sm">
-            <Column  header="#" style="width: 4%">
-                    <template #body="{index}">
-                        {{ index + 1 }}
-                    </template>
-                    </Column>
-            <Column field="name" header="Name" sortable style="width: 25%">
-            <template #body="slotProps">
-                <router-link :to="{name : 'admin.categories.category' , params : {id : slotProps.data.id}}">{{ slotProps.data.name }}</router-link>
+            <template #loading>
+                <TableLoader :cols="4" :rows="categories.length > 7 ? 10 : 1" />
+
             </template>
+            <Column header="#" style="width: 4%">
+                <template #body="{ index }">
+                    {{ index + 1 }}
+                </template>
+                <template #loading>
+                    <div class="flex items-center" :style="{ height: '17px', 'flex-grow': '1', overflow: 'hidden' }">
+                        <Skeleton width="60%" height="1rem" />
+                    </div>
+                </template>
             </Column>
-            <Column field="products_count" header="Products Count" sortable style="width: 25%"></Column>
-            <Column field="created_at" header="Created At" style="width: 25%"></Column>
+            <Column field="name" header="Name" style="width: 25%" :showFilterMatchModes="false">
+                <template #body="{ data }">
+                    <router-link :to="{ name: 'admin.categories.category', params: { id: data.id } }">{{ data.name
+                    }}</router-link>
+                </template>
+
+                <template #filter="{ filterModel }">
+                    <InputText v-model="filterModel.value" class="w-[1/2]" type="text" size="small"
+                        placeholder="Search by name" />
+                </template>
+                <template #loading>
+                    <div class="flex items-center" :style="{ height: '17px', 'flex-grow': '1', overflow: 'hidden' }">
+                        <Skeleton width="60%" height="1rem" />
+                    </div>
+                </template>
+            </Column>
+            <Column field="products_count" header="Products Count" sortable style="width: 25%">
+                <template #loading>
+                    <div class="flex items-center" :style="{ height: '17px', 'flex-grow': '1', overflow: 'hidden' }">
+                        <Skeleton width="60%" height="1rem" />
+                    </div>
+                </template>
+            </Column>
+            <Column field="created_at" sortable header="Created At" style="width: 25%">
+                <template #loading>
+                    <div class="flex items-center" :style="{ height: '17px', 'flex-grow': '1', overflow: 'hidden' }">
+                        <Skeleton width="60%" height="1rem" />
+                    </div>
+                </template>
+            </Column>
             <Column style="width: 5%">
-                <template #body="slotProps">
+                <template #body="{ data }">
                     <div class="flex gap-1 ">
                         <Button v-tooltip.bottom="{ value: 'Edit', pt: { text: '!text-[0.6rem]' } }" type="text"
-                            class="self-center" as="router-link" icon="pi pi-pen-to-square"
-                            :to="'/admin/categories/' + slotProps.data.id + '/edit'" iconClass="!text-sm !text-gray-700"
+                            class="self-center" as="router-link" icon="pi pi-pencil"
+                            :to="'/admin/categories/' + data.id + '/edit'" iconClass="!text-sm !text-gray-700"
                             variant="text" size="small" />
-                        <Button @click="deleteRecord(slotProps.data.id)"
+                        <Button @click="deleteRecord(data.id)"
                             v-tooltip.bottom="{ value: 'Delete', pt: { text: '!text-[0.6rem]' } }" class="self-center "
                             variant="text" icon="pi pi-trash" iconClass="!text-sm !text-gray-700" size="small" />
                     </div>
@@ -88,8 +99,7 @@
             </Column>
 
         </DataTable>
-    </template>
-
+    </div>
     <div class="card">
         <Paginator :rows="_rows" @page="(page) => { _page = page.page + 1 }" @update:rows="(rows) => { _rows = rows }"
             :totalRecords="_total" :rowsPerPageOptions="[5, 10, 20, 50]"></Paginator>
@@ -97,9 +107,11 @@
 </template>
 
 <script setup>
-import { ref, watchEffect } from 'vue';
+import { ref, nextTick, watchEffect, reactive } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from "primevue/useconfirm";
+import debounce from 'lodash.debounce'
+import TableLoader from '@/Components/inc/TableLoader.vue'
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -116,15 +128,34 @@ const items = ref([
 const _total = ref(0)
 const _rows = ref(10)
 const _page = ref(1)
-const dummyCategories = ref(new Array(5))
 
-async function getCategories(page = 1, rows = 10) {
+const filters = ref({
+    name: '',
+});
+
+const sortBy = reactive({
+    key: '',
+    order: 'desc'
+})
+
+async function getCategories(page = 1, rows = 10,) {
+
+    const params = new URLSearchParams({
+        page: page,
+        limit: rows,
+        name: filters.value?.name.value || '',
+        sortBy: sortBy.key,
+        order: sortBy.order
+    }).toString();
+
     loading.value = true
-    await axios.get(`/api/categories/?page=${page}&limit=${rows}`)
+    await axios.get(`/api/categories/?${params}`)
         .then(res => {
-            categories.value = res.data.data;
-            _total.value = res.data.pagination.total
-            _rows.value = res.data.pagination.per_page
+            nextTick(() => {
+                categories.value = res.data.data;
+                _total.value = res.data.pagination.total
+                _rows.value = res.data.pagination.per_page
+            })
         }).catch(err => {
             console.log(err)
         }).finally(() => {
@@ -168,9 +199,18 @@ const deleteRecord = (id) => {
 };
 
 
+const sortData = (e) => {
+    sortBy.key = e.sortField
+    sortBy.order = e.sortOrder == 1 ? 'asc' : 'desc'
+}
+
+const clearFilter = () => {
+    filters.value = ''
+}
+
 
 watchEffect(async () => {
-    await getCategories(_page.value, _rows.value)
+    await getCategories(_page.value, _rows.value, filters, sortBy)
 })
 
 

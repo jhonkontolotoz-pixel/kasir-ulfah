@@ -12,11 +12,11 @@
         </div>
 
     </div>
-    <Chart type="bar" :data="chartData" :options="chartOptions" class="h-[20rem]" />
+    <Chart type="line" :data="chartData" :options="chartOptions" class="h-[20rem]" />
 </template>
 
 <script setup>
-import { onMounted, ref, reactive } from 'vue';
+import { onMounted, ref, reactive , nextTick } from 'vue';
 import { watchEffect } from 'vue';
 
 onMounted(() => {
@@ -50,8 +50,11 @@ const setChartData = async () => {
 
     await axios.get(`/api/revenueChart?${params}`)
         .then(res => {
+            nextTick(() => {
             labels.value = res.data.data.labels
-            data.value = res.data.data.datasets
+            data.value = res.data.data.datasets    
+            })
+            
         }).catch(err => {
             console.log(err)
         }).finally(() => {
@@ -65,7 +68,10 @@ const setChartData = async () => {
                 label: 'Revenue',
                 backgroundColor: documentStyle.getPropertyValue('--p-cyan-500'),
                 borderColor: documentStyle.getPropertyValue('--p-cyan-500'),
-                data: data.value
+                data: data.value,
+                fill: true,
+                tension: 0.4,
+                backgroundColor: 'rgba(107, 114, 128, 0.2)'
             }
         ]
     };

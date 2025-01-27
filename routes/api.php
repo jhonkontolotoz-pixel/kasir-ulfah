@@ -37,6 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('salesChart',[DashboardController::class , 'salesChart']);
     Route::get('ordersStatusChart',[DashboardController::class , 'ordersStatusChart']);
     Route::get('revenueChart',[DashboardController::class , 'revenueChart']);
+    Route::get('topProducts',[DashboardController::class , 'topProducts']);
+    
     
 });
 

@@ -21,7 +21,7 @@ class OrdersResource extends JsonResource
             'code' => $this->code,
             'customer_name' => $this->whenLoaded('customer',fn () => $this->customer->name),
             'created_by' =>  $this->whenLoaded('user',fn () => $this->user->name),
-            'total' => $this->total_price,
+            'total' => '$'.$this->total_price,
             'payment_method' => $this->payment_method,
             'status' => $this->status,
             'products_count' => $this->products_count,

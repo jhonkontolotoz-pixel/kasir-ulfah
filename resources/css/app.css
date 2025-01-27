@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.p-overlay-mask{
+    background: white !important;
+    color: white;
+    border-radius: 5px;
+
+}
+.p-datatable-mask{
+    display: block !important;
+
+}
+.p-datatable-thead{
+padding: 0px !important;
+}
+th{
+    padding: 0 0.9rem !important;
+}
+td{
+    font-size: 0.7rem;
+}

@@ -8,8 +8,7 @@ const routes = [...publicRoutes, ...adminRoutes];
 const router = createRouter({
     history: createWebHistory(),
     routes,
-    linkActiveClass: 'border border-indigo-500 rounded',
-    linkExactActiveClass: 'border border-gray-500 rounded',
+    linkActiveClass: 'border border-gray-400 rounded',
 });
 
 router.beforeEach(async (to, from, next) => {

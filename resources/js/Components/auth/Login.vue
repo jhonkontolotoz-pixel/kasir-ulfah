@@ -19,7 +19,7 @@
 
             <div class="flex items-center justify-between mb-12">
                 <div class="flex items-center">
-                    <Checkbox inputId="rememberme1" name="rememberme" v-model="creds.remember_me" :binary="true"
+                    <Checkbox inputId="rememberme1" name="rememberme" v-model="creds.remember" :binary="true"
                         class="mr-2 bg-transparent" />
                     <label for="rememberme1">Remember me</label>
                 </div>
@@ -42,7 +42,7 @@ import { useRouter } from 'vue-router'
 const creds = ref({
     email: '',
     password: '',
-    remember_me: false
+    remember: false
 })
 
 const toast = useToast();

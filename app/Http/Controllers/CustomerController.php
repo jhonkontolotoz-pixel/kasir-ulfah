@@ -20,7 +20,22 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::withCount('orders')->latest()->paginate($request->limit ?? 10);
+        $customers = Customer::withCount('orders')
+        ->when($request->name , function($q) use ($request) {
+            $q->where('name','LIKE',"%{$request->name}%");
+        })
+->when($request->phone , function($q) use ($request) {
+$q->where('phone','LIKE',"%{$request->phone}%");
+        })
+->when($request->email , function($q) use ($request) {
+            $q->where('email','LIKE',"%{$request->email}%");
+        })
+        ->when($request->sortBy && $request->order , function($q) use ($request){
+            $q->orderBy($request->sortBy , $request->order);
+        },function($q){
+            $q->latest();
+        })
+        ->paginate($request->limit ?? 10);
 
         return successResponse(new CustomersCollection($customers));
 

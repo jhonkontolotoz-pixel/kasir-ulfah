@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Http\Resources\Dashboard\TopProductsResource;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
@@ -148,5 +149,20 @@ class DashboardService
         return $orders;
     }
 
+    public static function topProducts()
+    {
+        $productsCount = Product::with('images')->select(
+        DB::raw("products.id"),
+        DB::raw("products.title"),
+        DB::raw('SUM(order_products.quantity) as sold_count'),
+        )
+        ->join("order_products","order_products.product_id","products.id")
+        ->groupBy("products.id","products.title","products.sku")
+        ->orderByDesc("sold_count")
+        ->get()
+        ->take(5);
+
+        return TopProductsResource::collection($productsCount);
+    }
 
 }

@@ -66,7 +66,7 @@
             <RevenueChart/>
         </div>
         <div class="lg:w-2/6 md:w-2/6 w-full shadow-md">
-            
+        <TopProducts />    
         </div>
     </div>
     
@@ -77,6 +77,7 @@ import { onMounted, ref } from 'vue';
 import OrdersStatusChart from '@/Components/inc/OrdersStatusChart.vue'
 import OrdersChart from '@/Components/inc/OrdersChart.vue'
 import RevenueChart from '@/Components/inc/RevenueChart.vue'
+import TopProducts from '@/Components/inc/TopProducts.vue'
 
 const loadingCounts = ref(false)
 
@@ -92,6 +93,7 @@ const getCounts = async () => {
             loadingCounts.value = false
         })
 }
+
 
 onMounted(async () => {
     await getCounts()

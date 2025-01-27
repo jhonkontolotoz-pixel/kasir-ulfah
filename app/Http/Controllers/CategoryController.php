@@ -17,7 +17,16 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $categories = Category::withCount('products')->paginate($request->limit ?? 10);
+        $categories = Category::withCount('products')
+        ->when($request->name , function($q) use ($request){
+            $q->where("name","LIKE","%${$request->name}%");
+        })
+        ->when($request->sortBy && $request->order , function($q) use ($request){
+            $q->orderBy($request->sortBy , $request->order);
+        },function($q){
+            $q->latest();
+        })
+        ->paginate($request->limit ?? 10);
 
         return successResponse(new CategoriesCollection($categories));
     }

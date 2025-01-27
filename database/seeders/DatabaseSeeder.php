@@ -8,7 +8,7 @@ use Database\Seeders\CategorySeeder;
 use Database\Seeders\ProductSeeder;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\User;
+use App\Models\Order;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+
         
         $this->call([
             CustomersSeeder::class,

@@ -1,134 +1,87 @@
 <template>
-    <div>
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
+    <Toast />
 
-            <!-- Page header -->
-            <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 mb-0 text-gray-800">customers</h1>
-
-            </div>
-
-            <!-- Content Row -->
-            <div class="row">
-
-                <div class="col-md-12">
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="h6 text-muted">Create New customer</h6>
-                            <Errors :errors="errors"></Errors>
-                        </div>
-
-
-                        <div v-if="saved" class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{message}}
-                            <button @click="!saved" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-
-                    </div>
-                    <div class="card-body">
-                        <form >
-
-                            <div class="form-group">
-                                <input type="text" class="form-control form-control-user" v-model="customer.name"
-                                    placeholder="name" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="email" class="form-control form-control-user" v-model="customer.email"
-                                    placeholder="email" >
-                            </div>
-
-                            <div class="form-group">
-                                <input type="number" class="form-control form-control-user" v-model="customer.phone"
-                                    placeholder="phone" required>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="text" class="form-control form-control-user" v-model="customer.address"
-                                    placeholder="address" required>
-                            </div>
-                            <button :disabled="processing" @click.prevent="createCustomer()"
-                                class="btn btn-primary btn-user btn-block">
-                                {{ processing ? "Saving..." : "Create" }}
-                                <img v-show="processing" src="" alt="loading">
-                            </button>
-
-                        </form>
-                    </div>
-                </div>
-            </div>
-
+    <div class="card flex justify-between">
+        <div>
+            <Breadcrumb :home="home" :model="items" class="mb-5 text-md">
+                <template #item="{ item, props }">
+                    <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+                        <a :href="href" v-bind="props.action" @click="navigate">
+                            <span :class="[item.icon, 'text-color']" />
+                            <span class="text-primary font-semibold">{{ item.label }}</span>
+                        </a>
+                    </router-link>
+                    <a v-else :href="item.url" :target="item.target" v-bind="props.action">
+                        <span class="text-surface-700 dark:text-surface-0">{{ item.label }}</span>
+                    </a>
+                </template>
+            </Breadcrumb>
         </div>
-
     </div>
-    <!-- /.container-fluid -->
+    <div class="card flex w-full p-3">
+        <form @submit.prevent="createCustomer" class="w-full">
 
+    <div class="mb-4">
+        <label for="name" class="dark:text-surface-0 font-semibold mb-1 block">Name</label>
+        <InputText id="name" v-model="customer.name" class="w-full" size="small" autocomplete="off" />
+    </div>
+    <div class="mb-4">
+        <label for="email" class="dark:text-surface-0 font-semibold mb-1 block">Email</label>
+        <InputText id="email" v-model="customer.email" class="w-full" size="small" autocomplete="off" />
+    </div>
 
+    <div class="mb-4">
+        <label for="phone" class="dark:text-surface-0 font-semibold mb-1 block">Phone</label>
+        <InputText id="phone" v-model="customer.phone" class="w-full" size="small" autocomplete="off" />
+    </div>
+    <div class="mb-4">
+        <label for="address" class="dark:text-surface-0 font-semibold mb-1 block">Address</label>
+        <InputText id="address" v-model="customer.address" class="w-full" size="small" autocomplete="off" />
+    </div>
+            <div class="flex">
+                <Button type="submit" label="Save" icon="pi pi-download" :disabled="loading" severity="contrast"
+                    raised></Button>
+            </div>
+        </form>
+    </div>
 </template>
 
-<script>
-import Errors from '../../../inc/ValidationErrors.vue'
+<script setup>
+import { ref } from 'vue';
+import { useToast } from 'primevue/usetoast';
 
-    export default {
-        components : {
-            Errors
-        },
-        data: function () {
-            return {
-                customer: {
-                    name: null,
-                    email: null,
-                    phone: null,
-                    address: null,
-                    password : "$$hashedPassword200"
-                },
-                saved: false,
-                message: null,
-                processing: false,
-                errors: null,
-                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            }
-        },
-        methods: {
+const toast = useToast()
+const loading = ref(false)
+const customer = ref({})
 
-            async createCustomer() {
-                this.processing = true
-                /* let formData = new FormData();
+const home = ref({
+    icon: 'pi pi-home',
+    route: '/dashboard'
+});
+const items = ref([
+    { label: 'Customers', icon: 'pi pi-users', route: { name: 'admin.customers' } },
+    { label: 'Create Customer', icon: 'pi pi-plus' },
 
-                for (let [key, value] of Object.entries(this.customer)) {
-
-                    formData.append(key, value)
-
-                } */
-                console.table(this.customer)
-
-                await axios.post("/api/customers", this.customer)
-                    .then(res => {
-
-                        this.saved = true
-                        this.message = res.data.message
-
-                    }).catch(err => {
-
-                        this.errors = err.response.data.errors
-
-                    }).finally(() => {
-                        this.processing = false
-                    })
-            }
-        },
-        mounted() {
-
-            document.name = "Store | customer - Create"
+])
 
 
-        }
+async function createCustomer() {
 
-    }
+    loading.value = true
+
+    await axios.post(`/api/customers`, customer.value).then(res => {
+        toast.add({ severity: 'success', summary: 'Saved', detail: 'Customer Saved Successfully', life: 4000 });
+        customer.value = {}
+    }).catch(err => {
+        toast.add({ severity: 'error', summary: 'failed', detail: 'Failed to Save Record!', life: 4000 });
+    }).finally(() => {
+        loading.value = false
+    })
+
+}
+
+
 
 </script>
 
-<style>
-
-</style>
+<style scoped></style>

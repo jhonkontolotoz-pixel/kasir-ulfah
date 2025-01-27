@@ -1,11 +1,11 @@
 <template>
-    <div class="wrapper flex justify-center !font-mono antialiased tracking-wide">
-        <div class="sidebar bg-white text-sm leading-3 fixed left-0 top-0 bottom-0 border-r transition-width duration-500 ease-in-out !overflow-hidden z-50"
-            :class="{ 'lg:w-1/6 md:w-1/6 ': isOpenSidebar, 'w-0': !isOpenSidebar }">
+    <div class="wrapper flex justify-center !font-sans-serif antialiased tracking-wide w-full overflow-hidden">
+        <div class="sidebar bg-white text-sm leading-3 fixed left-0 top-0 bottom-0 border-r transition-width duration-500 ease-in-out !overflow-hidden z-50 !lg:block "
+            :class="{ 'lg:w-1/6 w-0 ': isOpenSidebar, 'w-0': !isOpenSidebar }">
             <Sidebar />
         </div>
         <div class="content rounded-none transition-width  duration-500 ease-in-out"
-            :class="{ 'lg:w-5/6 md:w-5/6 ml-[16.6666%]': isOpenSidebar, 'lg:w-6/6 md:w-6/6 w-screen ml-0': !isOpenSidebar }">
+            :class="{ 'lg:w-5/6 lg:ml-[16%] w-full': isOpenSidebar, 'lg:w-6/6 md:w-6/6 !w-full !ml-0': !isOpenSidebar }">
             <nav class=" flex flex-wrap justify-between items-center  border-b px-4 h-16  mb-5">
                 <div>
                     <Button icon="pi pi-bars" severity="secondary" variant="text" rounded aria-label="bars"
@@ -23,7 +23,7 @@
                             aria-label="Notification" />
                         <Button icon="pi pi-table" severity="secondary" variant="text" rounded aria-label="Table" />
                         <Button icon="pi pi-search" severity="secondary" variant="text" rounded aria-label="Search" />
-                        <Button icon="pi pi-shopping-cart" severity="secondary" variant="outlined"  aria-label="Cart" :badge="cart.getCart.length.toString()" badgeSeverity="contrast" as="router-link" to="/admin/cart" />
+                        <Button icon="pi pi-shopping-cart" severity="secondary" variant="text"   aria-label="Cart" :badge="cart.getCart?.length > 0 ? cart.getCart?.length.toString() : ''" badgeSeverity="contrast" as="router-link" to="/admin/cart" />
                         
                     </div>
                 </div>

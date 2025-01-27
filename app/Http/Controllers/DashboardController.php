@@ -33,10 +33,12 @@ class DashboardController extends Controller
         return successResponse(DashboardService::counts($request));
     }
 
-    public function latestProducts(Request $request)
+    public function topProducts()
     {
-        return successResponse(DashboardService::counts($request));
+        return successResponse(DashboardService::topProducts());
     }
+
+
   
 
 }

@@ -15,7 +15,23 @@ class ProductController extends Controller
     public function index(Request $request)
     {
 
-       $products = Product::latest()->paginate($request->limit ?? 10);
+       $products = Product::when($request->sku , function($q) use ($request) {
+ $q->where("sku","LIKE","%{$request->sku}%");
+       })
+       ->when($request->title , function($q) use ($request){
+            $q->where("title","LIKE","%{$request->title}%");
+        })
+        ->when($request->category , function($q) use ($request){
+            $q->whereHas("category",function ($query) use($request) {
+                $query->where('name',"LIKE","%{$request->category}%");
+            });
+        })
+        ->when($request->sortBy && $request->order , function($q) use ($request){
+            $q->orderBy($request->sortBy , $request->order);
+        },function($q){
+            $q->latest();
+        })
+       ->paginate($request->limit ?? 10);
 
        return successResponse(new ProductCollection($products));
 
