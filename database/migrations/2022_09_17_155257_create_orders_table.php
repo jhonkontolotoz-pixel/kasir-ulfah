@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->ulid();
+            $table->id();
             $table->string('code')->unique();
             $table->enum("status",['shipped','delivered','pending','canceled'])->default('pending');
             $table->decimal("total_price",unsigned:true);

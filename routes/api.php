@@ -22,6 +22,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
@@ -29,6 +30,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+   
     Route::apiResource('products', ProductController::class);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('customers', CustomerController::class);
@@ -38,8 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('ordersStatusChart',[DashboardController::class , 'ordersStatusChart']);
     Route::get('revenueChart',[DashboardController::class , 'revenueChart']);
     Route::get('topProducts',[DashboardController::class , 'topProducts']);
-    
-    
+   
 });
 
 Route::post("/login", [AuthenticatedSessionController::class, 'store']);

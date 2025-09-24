@@ -9,6 +9,7 @@ use App\Http\Requests\Customer\CustomerRequest;
 use App\Http\Resources\Customer\CustomersCollection;
 use App\Http\Resources\Customer\CustomersResource;
 use App\Models\Customer;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
@@ -20,39 +21,46 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::withCount('orders')
-        ->when($request->name , function($q) use ($request) {
-            $q->where('name','LIKE',"%{$request->name}%");
-        })
-->when($request->phone , function($q) use ($request) {
-$q->where('phone','LIKE',"%{$request->phone}%");
-        })
-->when($request->email , function($q) use ($request) {
-            $q->where('email','LIKE',"%{$request->email}%");
-        })
-        ->when($request->sortBy && $request->order , function($q) use ($request){
-            $q->orderBy($request->sortBy , $request->order);
-        },function($q){
-            $q->latest();
-        })
-        ->paginate($request->limit ?? 10);
 
-        return successResponse(new CustomersCollection($customers));
+        $key = "customers." . implode('.', $request->all());
 
+        $customers = Cache::remember($key, 60, function () use ($request) {
+
+            $customers = Customer::withCount('orders')
+                ->when($request->name, function ($q) use ($request) {
+                    $q->where('name', 'LIKE', "%{$request->name}%");
+                })
+                ->when($request->phone, function ($q) use ($request) {
+                    $q->where('phone', 'LIKE', "%{$request->phone}%");
+                })
+                ->when($request->email, function ($q) use ($request) {
+                    $q->where('email', 'LIKE', "%{$request->email}%");
+                })
+                ->when($request->sortBy && $request->order, function ($q) use ($request) {
+                    $q->orderBy($request->sortBy, $request->order);
+                }, function ($q) {
+                    $q->latest();
+                })
+                ->paginate($request->limit ?? 10);
+
+            return new CustomersCollection($customers);
+        });
+
+        return successResponse($customers, additional: ['pdf_url' => url('reports/customers/' . $key)]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate
+     * \Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(CustomerRequest $request)
     {
         Customer::create($request->validated());
 
-        return successResponse(message:"Customer Created Successfully");
-
+        return successResponse(message: "Customer Created Successfully");
     }
 
     /**
@@ -74,12 +82,11 @@ $q->where('phone','LIKE',"%{$request->phone}%");
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CustomerRequest $request,Customer $customer)
+    public function update(CustomerRequest $request, Customer $customer)
     {
         $customer->update($request->validated());
 
-        return successResponse(message:"Customer Updated Successfully");
-
+        return successResponse(message: "Customer Updated Successfully");
     }
 
     /**
@@ -92,6 +99,6 @@ $q->where('phone','LIKE',"%{$request->phone}%");
     {
         $customer->delete();
 
-        return successResponse(message:"Customer Deleted Successfully");
+        return successResponse(message: "Customer Deleted Successfully");
     }
 }

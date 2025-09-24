@@ -9,7 +9,7 @@
 import { ref, onMounted } from "vue";
 
 onMounted(async () => {
-    chartData.value =await setChartData();
+    chartData.value = await setChartData();
     chartOptions.value = setChartOptions();
 });
 

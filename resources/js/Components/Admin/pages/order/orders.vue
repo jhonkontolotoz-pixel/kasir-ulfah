@@ -24,7 +24,7 @@
             <Button v-tooltip.bottom="{ value: 'Create Order', pt: { text: '!text-[0.7rem]' } }" variant="text" type="text"
                 class="self-center" as="router-link" severity="contrast" icon="pi pi-plus" to="/admin/pos" />
             <Button v-tooltip.bottom="{ value: 'Export as PDF', pt: { text: '!text-[0.7rem]' } }" variant="text" type="text"
-                class="self-center" severity="contrast" icon="pi pi-file-pdf" />
+                class="self-center" severity="contrast" icon="pi pi-file-pdf" @click="download()" />
             <Button v-tooltip.bottom="{ value: 'Refresh Data', pt: { text: '!text-[0.7rem]' } }" variant="text" type="text"
                 class="self-center" severity="contrast" icon="pi pi-refresh"
                 @click.prevent="getOrders(_page, _rows, filters, sortBy)" />
@@ -122,17 +122,16 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watchEffect, reactive } from 'vue';
+import { ref, watchEffect, reactive } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from "primevue/useconfirm";
-import debounce from 'lodash.debounce'
 import TableLoader from '@/Components/inc/TableLoader.vue'
 
 
 const confirm = useConfirm();
 const toast = useToast();
 const orders = ref([])
-const search = ref('')
+const pdf_url = ref('')
 const loading = ref(true)
 const statuses = ref(['canceled', 'pending', 'shipped', 'delivered']);
 const payment_methods = ref(['cash', 'card']);
@@ -180,13 +179,10 @@ async function getOrders(page = 1, rows = 10, filters, sortBy) {
     await axios.get(`/api/orders/?${params}`)
         .then(res => {
 
-            nextTick(() => {
-
-                orders.value = res.data.data;
+                orders.value = res.data.data
+                pdf_url.value = res.data.pdf_url
                 _total.value = res.data.pagination.total
                 _rows.value = res.data.pagination.per_page
-            })
-
         }).catch(err => {
             console.log(err)
         }).finally(() => {
@@ -267,6 +263,22 @@ const sortData = (e) => {
     sortBy.order = e.sortOrder == 1 ? 'asc' : 'desc'
 }
 
+
+
+const download = () => {
+
+try {
+    const link = document.createElement('a')
+    link.href = pdf_url.value
+    link.setAttribute('download', 'Report.pdf')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+} catch (error) {
+    console.log("failed to download", error)
+}
+}
 
 
 watchEffect(async () => {

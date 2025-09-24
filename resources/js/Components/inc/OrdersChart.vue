@@ -49,14 +49,7 @@ const setChartData = async () => {
         date_to : filters.date_to ? (new Date(filters.date_to)).toISOString() : ''
     }).toString();
 
-    /* router.replace({
-         query : 
-         {
-         type : filters.type ,
-         date_from : filters.date_from ? (new Date(filters.date_from)).toISOString() : '' ,
-         date_to : filters.date_to ? (new Date(filters.date_to)).toISOString() : ''  
-        } })
-         */
+    
     await axios.get(`/api/salesChart?${params}`)
         .then(res => {
             labels.value = res.data.data.labels

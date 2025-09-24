@@ -25,7 +25,7 @@
                 class="self-center  " severity="contrast" as="router-link" variant="text" icon="pi pi-plus" size="small"
                 to="/admin/products/create" />
             <Button v-tooltip.bottom="{ value: 'Export as PDF', pt: { text: '!text-[0.7rem]' } }" type="text"
-                class="self-center  " severity="contrast" variant="text" icon="pi pi-file-pdf" size="small" />
+                class="self-center  " severity="contrast" variant="text" icon="pi pi-file-pdf" size="small" @click="download()" />
             <Button v-tooltip.bottom="{ value: 'Refresh Data', pt: { text: '!text-[0.7rem]' } }" type="text"
                 class="self-center " severity="contrast" variant="text" icon="pi pi-refresh" size="small"
                 @click.prevent="getProducts(_page, _rows, filters, sortBy)" />
@@ -108,16 +108,16 @@
 </template>
 
 <script setup>
-import { ref, watchEffect, nextTick, reactive, computed } from 'vue';
+import { ref, watchEffect, reactive, computed } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import ConfirmDialog from 'primevue/confirmdialog';
 import { useConfirm } from "primevue/useconfirm";
+import ConfirmDialog from 'primevue/confirmdialog';
 import TableLoader from '@/Components/inc/TableLoader.vue'
 
 const confirm = useConfirm();
 const toast = useToast();
 const products = ref([])
-const search = ref('')
+const pdf_url = ref('')
 const loading = ref(false)
 const home = ref({
     icon: 'pi pi-home',
@@ -161,6 +161,7 @@ async function getProducts(page = 1, rows = 10, filters, sortBy) {
         products.value = res.data.data;
         _total.value = res.data.pagination.total
         _rows.value = res.data.pagination.per_page
+        pdf_url.value = res.data.pdf_url
 
     }).catch(err => {
         console.log(err)
@@ -217,6 +218,21 @@ const clearFilter = () => {
     filters.value.category_name = ''
 }
 
+
+const download = () => {
+
+try {
+    const link = document.createElement('a')
+    link.href = pdf_url.value
+    link.setAttribute('download', 'Report.pdf')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+} catch (error) {
+    console.log("failed to download", error)
+}
+}
 
 
 watchEffect(async () => {

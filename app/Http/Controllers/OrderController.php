@@ -14,6 +14,7 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
@@ -21,64 +22,64 @@ class OrderController extends Controller
 
     public function index(OrderFiltersRequest $request)
     {
-        $orders = Order::with(['customer:id,name','user:id,name'])
-        ->withCount('products')
-        ->when($request->status , function($q) use ($request){
-            $q->where("status",$request->status);
-        })
-        ->when($request->payment , function($q) use ($request){
-            $q->where("payment_method",$request->payment);
-        })
-        ->when($request->code , function($q) use ($request){
-            $q->where('code','LIKE',"%{$request->code}%");
-        })
-        ->when($request->customer_name , function($q) use ($request){
-            $q->whereHas("customer", function($query) use ($request) {
-                $query->where("name","LIKE","%{$request->customer_name}%");
-            });
-        })
-        ->when($request->sortBy && $request->order , function($q) use ($request){
-            $q->orderBy($request->sortBy , $request->order);
-        },function($q){
-            $q->latest();
-        })
-        ->paginate($request->limit ?? 10);
 
+        $key = "orders." . implode('.', $request->all());
 
+        $orders =  Cache::remember($key, 60, function () use ($request) {
 
-        return successResponse(new OrdersCollection($orders));
+            $orders = Order::with(['customer:id,name', 'user:id,name'])
+                ->withCount('products')
+                ->when($request->status, function ($q) use ($request) {
+                    $q->where("status", $request->status);
+                })
+                ->when($request->payment, function ($q) use ($request) {
+                    $q->where("payment_method", $request->payment);
+                })
+                ->when($request->code, function ($q) use ($request) {
+                    $q->where('code', 'LIKE', "%{$request->code}%");
+                })
+                ->when($request->customer_name, function ($q) use ($request) {
+                    $q->whereHas("customer", function ($query) use ($request) {
+                        $query->where("name", "LIKE", "%{$request->customer_name}%");
+                    });
+                })
+                ->when($request->sortBy && $request->order, function ($q) use ($request) {
+                    $q->orderBy($request->sortBy, $request->order);
+                }, function ($q) {
+                    $q->latest();
+                })
+                ->paginate($request->limit ?? 10);
+
+            return new OrdersCollection($orders);
+        });
+
+        return successResponse($orders, additional: ['pdf_url' => url('reports/orders/' . $key)]);
     }
 
     public function show(Order $order)
     {
-        return successResponse(new OrdersResource($order->loadCount('products')->load(['products','user:id,name','customer:id,name'])));
+        return successResponse(new OrdersResource($order->loadCount('products')->load(['products', 'user:id,name', 'customer:id,name'])));
     }
 
     public function store(OrderRequest $request)
     {
 
         OrderService::CreateOrder($request->validated());
-        
-        return successResponse(message: "Order Created Successfully");
 
+        return successResponse(message: "Order Created Successfully");
     }
 
-    public function updateOrderStatus(OrderStatusUpdateRequest $request , Order $order)
+    public function updateOrderStatus(OrderStatusUpdateRequest $request, Order $order)
     {
         $order->update(['status' => $request->validated()]);
 
         return successResponse(message: "Order Updated Successfully");
-
     }
 
-    public function destroy( Order $order)
+    public function destroy(Order $order)
     {
         $order->delete();
 
         return successResponse(message: "Order Deleted Successfully");
-
     }
-
-
-
 }

@@ -7,34 +7,41 @@ use App\Models\Product;
 use App\Http\Requests\Product\ProductRequest;
 use App\Http\Resources\Product\ProductCollection;
 use App\Http\Resources\Product\ProductResource;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-   
+
     public function index(Request $request)
     {
 
-       $products = Product::when($request->sku , function($q) use ($request) {
- $q->where("sku","LIKE","%{$request->sku}%");
-       })
-       ->when($request->title , function($q) use ($request){
-            $q->where("title","LIKE","%{$request->title}%");
-        })
-        ->when($request->category , function($q) use ($request){
-            $q->whereHas("category",function ($query) use($request) {
-                $query->where('name',"LIKE","%{$request->category}%");
-            });
-        })
-        ->when($request->sortBy && $request->order , function($q) use ($request){
-            $q->orderBy($request->sortBy , $request->order);
-        },function($q){
-            $q->latest();
-        })
-       ->paginate($request->limit ?? 10);
+        $key = "products." . implode('.', $request->all());
 
-       return successResponse(new ProductCollection($products));
+        $products = Cache::remember($key, 60, function () use ($request) {
 
+            $products = Product::when($request->sku, function ($q) use ($request) {
+                $q->where("sku", "LIKE", "%{$request->sku}%");
+            })
+                ->when($request->title, function ($q) use ($request) {
+                    $q->where("title", "LIKE", "%{$request->title}%");
+                })
+                ->when($request->category, function ($q) use ($request) {
+                    $q->whereHas("category", function ($query) use ($request) {
+                        $query->where('name', "LIKE", "%{$request->category}%");
+                    });
+                })
+                ->when($request->sortBy && $request->order, function ($q) use ($request) {
+                    $q->orderBy($request->sortBy, $request->order);
+                }, function ($q) {
+                    $q->latest();
+                })
+                ->paginate($request->limit ?? 10);
+
+            return new ProductCollection($products);
+        });
+
+        return successResponse($products, additional: ['pdf_url' => url('reports/products/' . $key)]);
     }
 
     public function store(ProductRequest $request)
@@ -44,24 +51,21 @@ class ProductController extends Controller
 
         $product = Product::create($data);
 
-        if($request->has('image'))
-        {
+        if ($request->has('image')) {
+
             $file_name = $request->file('image')->storePublicly('images');
 
-            $image = $product->images()->create(['image'=>$file_name]);
-
+            $image = $product->images()->create(['image' => $file_name]);
         }
 
         return successResponse(message: "Product Created Successfully");
-
     }
 
- 
-    public function show( Product $product)
+
+    public function show(Product $product)
     {
 
         return successResponse(new ProductResource($product));
-
     }
 
 
@@ -71,23 +75,21 @@ class ProductController extends Controller
         $product->update($request->validated());
 
 
-        if($request->has('image'))
-        {
+        if ($request->has('image')) {
 
             $old_image = $product->images()->first()->image;
 
-            $file_name = $request->file('image')->storePublicly('images' , ['disk' => 'public']);
+            $file_name = $request->file('image')->storePublicly('images', ['disk' => 'public']);
 
-            $image = $product->images()->updateOrCreate(['image'=>$file_name]);
+            $image = $product->images()->updateOrCreate(['image' => $file_name]);
 
-            unlink(storage_path('app/public/'.$old_image));
+            unlink(storage_path('app/public/' . $old_image));
         }
 
         return successResponse(message: "Product Updated Successfully");
-       
     }
 
- 
+
     public function destroy(Product $product)
     {
         $product->delete();

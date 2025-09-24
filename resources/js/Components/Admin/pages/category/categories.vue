@@ -25,7 +25,7 @@
                 type="text" class="self-center" as="router-link" severity="contrast" icon="pi pi-plus"
                 to="/admin/categories/create" />
             <Button v-tooltip.bottom="{ value: 'Export as PDF', pt: { text: '!text-[0.7rem]' } }" variant="text" type="text"
-                class="self-center" severity="contrast" icon="pi pi-file-pdf" />
+                class="self-center" severity="contrast" icon="pi pi-file-pdf" @click="download()" />
             <Button v-tooltip.bottom="{ value: 'Refresh Data', pt: { text: '!text-[0.7rem]' } }" variant="text" type="text"
                 class="self-center" severity="contrast" icon="pi pi-refresh" @click.prevent="getCategories(_page, _rows)" />
 
@@ -110,13 +110,12 @@
 import { ref, nextTick, watchEffect, reactive } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from "primevue/useconfirm";
-import debounce from 'lodash.debounce'
 import TableLoader from '@/Components/inc/TableLoader.vue'
 
 const confirm = useConfirm();
 const toast = useToast();
 const categories = ref([])
-const search = ref('')
+const pdf_url = ref('')
 const loading = ref(false)
 const home = ref({
     icon: 'pi pi-home',
@@ -155,6 +154,7 @@ async function getCategories(page = 1, rows = 10,) {
                 categories.value = res.data.data;
                 _total.value = res.data.pagination.total
                 _rows.value = res.data.pagination.per_page
+                pdf_url.value = res.data.pdf_url
             })
         }).catch(err => {
             console.log(err)
@@ -208,6 +208,20 @@ const clearFilter = () => {
     filters.value = ''
 }
 
+const download = () => {
+
+    try {
+        const link = document.createElement('a')
+        link.href = pdf_url.value
+        link.setAttribute('download', 'Report.pdf')
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+    } catch (error) {
+        console.log("failed to download", error)
+    }
+}
 
 watchEffect(async () => {
     await getCategories(_page.value, _rows.value, filters, sortBy)

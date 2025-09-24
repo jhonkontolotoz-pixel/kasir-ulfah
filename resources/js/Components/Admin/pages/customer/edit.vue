@@ -14,7 +14,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h6 class="h6 text-muted">Update Customer</h6>
-                            <Errors :errors="errors"></Errors>
+                            
                         </div>
 
                         <div v-if="saved" class="alert alert-success alert-dismissible fade show m-2" role="alert">
@@ -64,13 +64,9 @@
 </template>
 
 <script>
-import Errors from '../../../inc/ValidationErrors.vue'
-
 
     export default {
-        components : {
-            Errors
-        },
+        
         data: function () {
             return {
                 customer: {

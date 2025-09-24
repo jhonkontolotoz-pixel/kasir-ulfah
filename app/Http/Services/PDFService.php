@@ -70,6 +70,7 @@ class PDFService
         ]);
 
         return $pdf->output();
+        
     }
 
     private function getMergedDate($data): array
