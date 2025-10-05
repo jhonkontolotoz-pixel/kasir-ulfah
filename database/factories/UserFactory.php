@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
@@ -17,6 +18,7 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        DB::statement('ALTER TABLE users AUTO_INCREMENT = 1;');
         return [
             'name' => 'Mohamed Afifi',
             'email' => 'mafifi350@gmail.com',

@@ -29,7 +29,7 @@ class OrderFiltersRequest extends FormRequest
             'customer_name'  => 'nullable|string',
             'code'           => 'nullable|string',
             'limit'          => 'nullable|integer',
-            'sortBy'         => 'nullable|string',
+            'sortBy'         => 'nullable|string|in:total_price,created_at',
             'order'          => 'nullable|string|in:desc,asc'
         ];
     }

@@ -59,7 +59,7 @@ class DashboardService
                 DB::raw('CAST(SUM(orders.total_price)/COUNT(orders.id) AS DECIMAL(8,2)) as orders_avg'),
             )
             ->groupBy(DB::raw("DATE_FORMAT(orders.created_at,'$format')"))
-            ->orderBy("orders.created_at")
+            ->orderBy(DB::raw("DATE_FORMAT(orders.created_at,'$format')"))
             ->get();
 
             
@@ -95,7 +95,7 @@ class DashboardService
                 DB::raw('CAST(SUM(orders.total_price) AS DECIMAL(10, 2)) as revenue')
             )
             ->groupBy(DB::raw("DATE_FORMAT(orders.created_at,'$format')"))
-            ->orderBy("orders.created_at")
+            ->orderBy(DB::raw("DATE_FORMAT(orders.created_at,'$format')"))
             ->get();
 
             

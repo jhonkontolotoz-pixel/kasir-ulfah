@@ -50,7 +50,7 @@
             <template #body="slotProps">
                 <router-link :to="{ name: 'admin.products.product', params: { id: slotProps.data.id } }"><img
                         class="block w-7 h-7 rounded-sm" alt="cover"
-                        :src="slotProps.data?.image ? '/storage/' + slotProps.data?.image : '/storage/default.png'"></router-link>
+                        :src="slotProps.data?.image ? '/storage/' + slotProps.data?.image : '/imgs/default.png'"></router-link>
             </template>
         </Column>
         <Column field="sku" header="SKU" style="width: 15%" filterMatchMode="contains" :showFilterMatchModes="false">

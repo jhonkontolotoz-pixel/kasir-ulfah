@@ -11,7 +11,7 @@
                     </Column>
                 <Column field="image" header="Image"  style="width: 5%">
                     <template #body="slotProps">
-                        <router-link :to="{name : 'admin.products.product' , params : {id : slotProps.data.id}}"><img class="block w-7 h-7 rounded-sm" alt="cover" :src="slotProps.data?.image ? '/storage/'+ slotProps.data?.image : '/storage/default.png'"></router-link>
+                        <router-link :to="{name : 'admin.products.product' , params : {id : slotProps.data.id}}"><img class="block w-7 h-7 rounded-sm" alt="cover" :src="slotProps.data?.image ? '/storage/'+ slotProps.data?.image : '/imgs/default.png'"></router-link>
                     </template>
                 </Column>
                 <Column field="title" header="Title"  style="width: 10%;text-overflow: ellipsis;"></Column>

@@ -5,7 +5,7 @@
 
 <div>
 
-    <Dialog v-model:visible="visible" modal header="Edit Customer" :style="{ 'min-width': '20rem' }">
+    <Dialog  pt:mask:class="backdrop-blur-sm" v-model:visible="visible" modal header="Edit Customer" :style="{ 'min-width': '20rem' }">
     <span class="text-surface-500 dark:text-surface-400 block mb-8">Update <strong>{{editedCustomer.originalData.name}}</strong> information.</span>
 
     <div class="mb-4">
@@ -145,6 +145,7 @@ import { useToast } from 'primevue/usetoast';
 import { useConfirm } from "primevue/useconfirm";
 import debounce from 'lodash.debounce'
 import TableLoader from '@/Components/inc/TableLoader.vue'
+import { useRouter , useRoute } from 'vue-router';
 
 const confirm = useConfirm();
 const toast = useToast();
@@ -179,24 +180,14 @@ const sortBy = reactive({
     order : 'desc'
 })
 
+const router = useRouter()
+const route = useRoute()
+
 async function getCustomers(page = 1, rows = 10 , filters, sortBy  ) {
-
-
-    const params = new URLSearchParams({
-        page : page,
-        limit : rows,
-        name : filters.value?.name.value || '',
-        email : filters.value?.email.value || '',
-        phone : filters.value?.phone.value || '' ,
-        address : filters.value?.address.value || '' ,
-
-        sortBy : sortBy.key,
-        order  : sortBy.order
-    }).toString();
 
     loading.value = true
 
-    await axios.get(`/api/customers/?${params}`)
+    await axios.get(`/api/customers/?${new URLSearchParams(route.query).toString()}`)
         .then(res => {
 
             customers.value = res.data.data;
@@ -259,6 +250,9 @@ filters.value.name = ''
 filters.value.email = ''
 filters.value.phone = ''
 filters.value.address = ''
+sortBy.key = ''
+sortBy.order = ''
+_page.value = 1
 
 }
 
@@ -321,11 +315,26 @@ try {
 }
 }
 
-
-watchEffect(async () => {
-await getCustomers(_page.value, _rows.value , filters,sortBy)
+watch([_page, _rows, filters, sortBy], () => {
+    router.replace({
+        name: 'admin.customers',
+        query: {
+            page: _page.value,
+            limit: _rows.value,
+            name: filters.value?.name.value,
+            email: filters.value?.email.value,
+            phone: filters.value?.phone.value,
+            address: filters.value?.address.value,
+            sortBy: sortBy.key,
+            order: sortBy.order
+        }
+    })
 })
 
+
+watch(() => route.query, async () => {
+    await getCustomers(_page.value, _rows.value, filters, sortBy)
+}, { immediate: true })
 
 </script>
 

@@ -122,12 +122,14 @@
 </template>
 
 <script setup>
-import { ref, watchEffect, reactive } from 'vue';
+import { ref, watch, reactive } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from "primevue/useconfirm";
 import TableLoader from '@/Components/inc/TableLoader.vue'
+import { useRouter , useRoute } from 'vue-router';
 
-
+const route = useRoute();
+const router = useRouter();
 const confirm = useConfirm();
 const toast = useToast();
 const orders = ref([])
@@ -162,27 +164,16 @@ const sortBy = reactive({
 
 async function getOrders(page = 1, rows = 10, filters, sortBy) {
 
-
-    const params = new URLSearchParams({
-        page: page,
-        limit: rows,
-        code: filters.value?.code.value || '',
-        status: filters.value?.status.value || '',
-        customer_name: filters.value?.customer_name.value || '',
-        payment_method: filters.value?.payment_method.value || '',
-        sortBy: sortBy.key,
-        order: sortBy.order
-    }).toString();
-
     loading.value = true
 
-    await axios.get(`/api/orders/?${params}`)
+    await axios.get(`/api/orders/?${new URLSearchParams(route.query).toString()}`)
         .then(res => {
 
                 orders.value = res.data.data
                 pdf_url.value = res.data.pdf_url
                 _total.value = res.data.pagination.total
                 _rows.value = res.data.pagination.per_page
+
         }).catch(err => {
             console.log(err)
         }).finally(() => {
@@ -207,6 +198,20 @@ const clearFilter = async () => {
     filters.value.status = ''
     filters.value.payment_method = ''
     filters.value.customer_name = ''
+
+    router.replace({
+        name: 'admin.orders',
+        query: {
+            page: _page.value,
+            limit: _rows.value,
+            code: filters.value?.code.value || '',
+            status: filters.value?.status.value || '',
+            customer_name: filters.value?.customer_name.value || '',
+            payment_method: filters.value?.payment_method.value || '',
+            sortBy: sortBy.key,
+            order: sortBy.order
+        }
+    })
 
 }
 
@@ -281,9 +286,31 @@ try {
 }
 
 
-watchEffect(async () => {
-    await getOrders(_page.value, _rows.value, filters, sortBy)
+
+
+watch([_page, _rows, filters, sortBy], () => {
+    router.replace({
+        name: 'admin.orders',
+        query: {
+            page: _page.value,
+            limit: _rows.value,
+            code: filters.value?.code.value || '',
+            status: filters.value?.status.value || '',
+            customer_name: filters.value?.customer_name.value || '',
+            payment_method: filters.value?.payment_method.value || '',
+            sortBy: sortBy.key,
+            order: sortBy.order
+       
+        }
+    })
 })
+
+
+watch(() => route.query, async () => {
+    await getOrders(_page.value, _rows.value, filters, sortBy)
+}, { immediate: true })
+
+
 
 
 </script>

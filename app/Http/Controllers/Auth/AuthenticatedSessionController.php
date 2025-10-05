@@ -47,6 +47,6 @@ class AuthenticatedSessionController extends Controller
         Auth::logout();
 
         return successResponse(message:"logged out");
-       
+
     }
 }

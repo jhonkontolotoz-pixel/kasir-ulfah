@@ -62,7 +62,6 @@ const login = async () => {
         })
         .catch(err => {
             loginfailed.value = true;
-            console.log(err)
             toast.add({ severity: 'error', summary: 'Login Failed', detail: 'Invalid Email or Password', life: 5000 });
         })
         .finally(() => {

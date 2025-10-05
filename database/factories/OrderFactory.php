@@ -22,8 +22,8 @@ class OrderFactory extends Factory
             'status' => fake()->randomElement(['pending','shipped','delivered']),
             'total_price' => $this->faker->randomFloat(2, 10, 1000),
             'payment_method' => $this->faker->randomElement(['cash', 'card']),
-            'user_id' => User::inRandomOrder()->first()->id ?? User::factory(),
-            'customer_id' => Customer::inRandomOrder()->first()->id ?? Customer::factory(),
+            'user_id' => 1 ,
+            'customer_id' => Customer::query()->inRandomOrder()->first()->id ,
             'created_at' => fake()->dateTimeBetween()
 
         ];

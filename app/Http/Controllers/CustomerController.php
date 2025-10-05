@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Repositories\CustomerRepository;
+use App\Http\Requests\Customer\CustomerFilterRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Requests\Customer\CustomerRequest;
@@ -19,32 +21,13 @@ class CustomerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+
+    public function __construct(public CustomerRepository $customerRepository ) {}
+
+    public function index(CustomerFilterRequest $request)
     {
 
-        $key = "customers." . implode('.', $request->all());
-
-        $customers = Cache::remember($key, 60, function () use ($request) {
-
-            $customers = Customer::withCount('orders')
-                ->when($request->name, function ($q) use ($request) {
-                    $q->where('name', 'LIKE', "%{$request->name}%");
-                })
-                ->when($request->phone, function ($q) use ($request) {
-                    $q->where('phone', 'LIKE', "%{$request->phone}%");
-                })
-                ->when($request->email, function ($q) use ($request) {
-                    $q->where('email', 'LIKE', "%{$request->email}%");
-                })
-                ->when($request->sortBy && $request->order, function ($q) use ($request) {
-                    $q->orderBy($request->sortBy, $request->order);
-                }, function ($q) {
-                    $q->latest();
-                })
-                ->paginate($request->limit ?? 10);
-
-            return new CustomersCollection($customers);
-        });
+        [$customers, $key] = $this->customerRepository->findAll($request);
 
         return successResponse($customers, additional: ['pdf_url' => url('reports/customers/' . $key)]);
     }
