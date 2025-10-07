@@ -19,13 +19,14 @@
             </Breadcrumb>
         </div>
         <div class="flex gap-2">
-            <Button v-tooltip.bottom="{ value: 'Clear Filters', pt: { text: '!text-[0.7rem]' } }" variant="text" type="text"
-                class="self-center" severity="contrast" icon="pi pi-filter-slash" @click="clearFilter()" />
+            <Button v-tooltip.bottom="{ value: 'Clear Filters', pt: { text: '!text-[0.7rem]' } }" variant="text"
+                type="text" class="self-center" severity="contrast" icon="pi pi-filter-slash" @click="clearFilter()" />
             <Button v-tooltip.bottom="{ value: 'Create Product', pt: { text: '!text-[0.7rem]' } }" type="text"
                 class="self-center  " severity="contrast" as="router-link" variant="text" icon="pi pi-plus" size="small"
                 to="/admin/products/create" />
             <Button v-tooltip.bottom="{ value: 'Export as PDF', pt: { text: '!text-[0.7rem]' } }" type="text"
-                class="self-center  " severity="contrast" variant="text" icon="pi pi-file-pdf" size="small" @click="download()" />
+                class="self-center  " severity="contrast" variant="text" icon="pi pi-file-pdf" size="small"
+                @click="download()" />
             <Button v-tooltip.bottom="{ value: 'Refresh Data', pt: { text: '!text-[0.7rem]' } }" type="text"
                 class="self-center " severity="contrast" variant="text" icon="pi pi-refresh" size="small"
                 @click.prevent="getProducts(_page, _rows, filters, sortBy)" />
@@ -82,7 +83,7 @@
                     placeholder="Search by Category" />
             </template>
         </Column>
-        <Column field="created_at" header="Created At" style="width: 15%">
+        <Column field="created_at" header="Created At" sortField="created_at" sortable style="width: 15%">
         </Column>
         <Column style="width: 5%">
             <template #body="{ data }">
@@ -108,12 +109,15 @@
 </template>
 
 <script setup>
-import { ref, watchEffect, reactive, computed } from 'vue';
+import { ref, watch, reactive, computed } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from "primevue/useconfirm";
 import ConfirmDialog from 'primevue/confirmdialog';
 import TableLoader from '@/Components/inc/TableLoader.vue'
+import { useRoute, useRouter } from 'vue-router';
 
+const route = useRoute();
+const router = useRouter();
 const confirm = useConfirm();
 const toast = useToast();
 const products = ref([])
@@ -156,7 +160,7 @@ async function getProducts(page = 1, rows = 10, filters, sortBy) {
     }).toString();
 
     loading.value = true
-    await axios.get(`/api/products?${params}`).then(res => {
+    await axios.get(`/api/products?${new URLSearchParams(route.query).toString()}`).then(res => {
 
         products.value = res.data.data;
         _total.value = res.data.pagination.total
@@ -221,23 +225,39 @@ const clearFilter = () => {
 
 const download = () => {
 
-try {
-    const link = document.createElement('a')
-    link.href = pdf_url.value
-    link.setAttribute('download', 'Report.pdf')
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    try {
+        const link = document.createElement('a')
+        link.href = pdf_url.value
+        link.setAttribute('download', 'Report.pdf')
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
 
-} catch (error) {
-    console.log("failed to download", error)
+    } catch (error) {
+        console.log("failed to download", error)
+    }
 }
-}
 
 
-watchEffect(async () => {
-    await getProducts(_page.value, _rows.value, filters, sortBy)
+watch([_page, _rows, filters, sortBy], () => {
+    router.replace({
+        name: 'admin.products',
+        query: {
+            page: _page.value,
+            limit: _rows.value,
+            title: filters.value?.title.value || '',
+            category: filters.value?.category_name.value || '',
+            sku: filters.value?.sku.value || '',
+            sortBy: sortBy.key,
+            order: sortBy.order
+        }
+    })
 })
+
+
+watch(() => route.query, async () => {
+    await getProducts(_page.value, _rows.value, filters, sortBy)
+}, { immediate: true })
 
 </script>
 

@@ -1,64 +1,196 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# 🧾 Laravel + Vue POS System
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A **modern Point of Sale (POS)** system built with **Laravel 9 (backend)** and **Vue 3 (frontend)**, designed for speed, scalability, and an excellent user experience.
+The system supports real-time data interaction, dynamic UI components, and robust backend APIs for managing sales, inventory, and users.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🖥️ Frontend (Vue 3 + Vite + Tailwind + PrimeVue)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* **Modern SPA** built with Vue 3 Composition API
+* **State Management** via Pinia + Persisted State
+* **Dynamic UI Components** powered by PrimeVue and PrimeIcons
+* **Customizable Themes** using `@primevue/themes`
+* **Charts & Analytics** with Chart.js
+* **Rich Text Editing** with Quill
+* **Multi-language support** using Laravel Vue i18n
+* **Lightning-fast build** with Vite
 
-## Learning Laravel
+### ⚙️ Backend (Laravel 9)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+* RESTful API architecture
+* Authentication & authorization with Laravel Sanctum
+* PDF generation with DomPDF (`barryvdh/laravel-dompdf`)
+* HTTP client integration via Guzzle
+* SQLite and PDO driver ready
+* Developer tools (Tinker, Pint, PHPUnit, Ignition)
+* Scalable structure ready for Docker/Sail
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 🏗️ Tech Stack
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+| Layer                | Technology                                   |
+| -------------------- | -------------------------------------------- |
+| **Backend**          | Laravel 9, PHP 8.0+                          |
+| **Frontend**         | Vue 3, Vite, Tailwind CSS                    |
+| **UI Library**       | PrimeVue 4.2, PrimeIcons 7                   |
+| **State Management** | Pinia                                        |
+| **Database**         | SQLite (default), MySQL/PostgreSQL supported |
+| **Testing**          | PHPUnit, Mockery                             |
+| **PDF Generation**   | barryvdh/laravel-dompdf                      |
+| **HTTP Client**      | GuzzleHTTP                                   |
+| **Localization**     | laravel-vue-i18n                             |
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## 📦 Installation
 
-## Contributing
+### 1️⃣ Clone the repository
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone https://github.com/mafifi96/Laravel-Vue-POS.git
+cd Laravel-Vue-POS
+```
 
-## Code of Conduct
+### 2️⃣ Install PHP dependencies
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer install
+```
 
-## Security Vulnerabilities
+### 3️⃣ Install Node dependencies
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+npm install
+```
 
-## License
+### 4️⃣ Environment setup
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Copy `.env.example` to `.env` and configure your settings:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+php artisan storage:link
+```
+
+Make sure your `.env` includes database credentials:
+
+```env
+DB_CONNECTION=sqlite
+# or use
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=pos
+# DB_USERNAME=root
+# DB_PASSWORD=
+```
+
+### 5️⃣ Run migrations & seeders
+
+```bash
+php artisan migrate --seed
+```
+
+### 6️⃣ Build frontend
+
+```bash
+npm run build
+# or for development
+npm run dev
+```
+
+### 7️⃣ Run the server
+
+```bash
+php artisan serve
+```
+
+---
+
+## 🧠 Development Mode (with Laravel Sail)
+
+If you’re using Docker:
+
+```bash
+./vendor/bin/sail up -d
+./vendor/bin/sail npm run dev
+```
+
+---
+
+## 🧩 Folder Structure Overview
+
+```
+laravel-vue-pos/
+├── app/                  # Laravel backend logic
+├── bootstrap/
+├── config/
+├── database/
+├── public/
+│   ├── build/            # Vite build output
+│   └── index.php
+├── resources/
+│   ├── js/
+│   │   ├── components/   # Vue components
+│   │   ├── stores/       # Pinia stores
+│   │   ├── router/       # Vue Router config
+│   │   └── app.js
+│   └── views/
+├── routes/
+│   ├── api.php           # API endpoints
+│   └── web.php
+└── vite.config.js
+```
+
+---
+
+## 🧾 Key Commands
+
+| Purpose                  | Command             |
+| ------------------------ | ------------------- |
+| Start Laravel dev server | `php artisan serve` |
+| Run frontend dev server  | `npm run dev`       |
+| Compile for production   | `npm run build`     |
+
+---
+
+## 🔒 Authentication
+
+* Token-based authentication via **Laravel Sanctum**
+* Supports user roles (admin, cashier, etc.)
+* Persistent session handled through frontend Pinia store
+
+---
+
+## 📈 Optional Integrations
+
+* **Email receipts** (using Laravel Mailables)
+* **Inventory sync** with third-party APIs via Guzzle
+* **PDF invoices** auto-generated and downloadable
+* **Offline mode** (optional future enhancement)
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome!
+Follow PSR-12 coding standards and ensure your code passes tests before submitting.
+
+---
+
+## 🪪 License
+
+This project is licensed under the **MIT License** — feel free to use and modify it.
+
+---
+
+## 🌟 Author
+
+**Binary Verse**
+Full-stack Laravel + Vue Developer
+🔗 [https://github.com/mafifi96](https://github.com/mafifi96)

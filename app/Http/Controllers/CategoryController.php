@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Repositories\CategoryRepository;
 use App\Http\Requests\Category\CategoryRequest;
-use App\Http\Resources\Category\CategoriesCollection;
 use App\Http\Resources\Category\CategoriesResource;
 use Illuminate\Http\Request;
 use App\Models\Category;
-use Illuminate\Support\Facades\Cache;
 
 class CategoryController extends Controller
 {
+    public function __construct(public CategoryRepository $categoryRepository ) {}
     /**
      * Display a listing of the resource.
      *
@@ -19,23 +19,7 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
 
-        $key = "categories.".implode('.', $request->all());
-
-        $categories = Cache::remember($key, 60,  function () use ($request) {
-
-            $categories = Category::withCount('products')
-                ->when($request->name, function ($q) use ($request) {
-                    $q->where("name", "LIKE", "{$request->name}");
-                })
-                ->when($request->sortBy && $request->order, function ($q) use ($request) {
-                    $q->orderBy($request->sortBy, $request->order);
-                }, function ($q) {
-                    $q->latest();
-                })
-                ->paginate($request->limit ?? 10);
-
-            return new CategoriesCollection($categories);
-        });
+        [$categories, $key] = $this->categoryRepository->findAll($request);
 
         return successResponse($categories, additional: ['pdf_url' => url('reports/categories/' . $key)]);
     }
