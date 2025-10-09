@@ -24,12 +24,12 @@ class OrdersResource extends JsonResource
             'total' => '$'.$this->total_price,
             'payment_method' => $this->payment_method,
             'status' => $this->status,
-            'products_count' => $this->products_count,
+            'products_count' => $this->orderItems->map(fn($item) => $item->quantity)->sum(),
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d h:i a"),
-            'shipped_at' => $this->status == "shipped" ? Carbon::parse($this->updated_at)->format("Y-m-d h:i a") : '...', 
+            'shipped_at' => $this->status == "shipped" ? Carbon::parse($this->updated_at)->format("Y-m-d h:i a") : '...',
             'delivered_at' => $this->status == "delivered" ? Carbon::parse($this->updated_at)->format("Y-m-d h:i a") : '...',
             'products' => $this->whenLoaded('products',fn () => new ProductCollection($this->products)),
-            
+
         ];
     }
 }

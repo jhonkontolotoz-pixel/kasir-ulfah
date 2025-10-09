@@ -98,16 +98,9 @@
                     </div>
                     <div class="w-full">
                         <label class=" font-medium mb-2 block">Image</label>
-                        <template v-if="product.image">
-                            <img :src="'/storage/' + product?.image" alt="Product Image"
-                                class="shadow-md rounded-xl w-full sm:w-64" style="filter: grayscale(100%)" />
 
-                        </template>
-
-                        <template v-else>
-                            <img :src="'/storage/default.png'" alt="Product Image"
+                            <img :src="product?.image ? '/storage/' + product?.image : '/imgs/default.png'" alt="Product Image"
                                 class="shadow-md rounded-xl w-full sm:w-64" style="filter: grayscale(100%)" />
-                        </template>
 
                     </div>
                     <div class="w-full">
@@ -177,7 +170,7 @@ async function getProduct() {
     }).catch(err => {
         toast.add({ severity: 'error', summary: 'failed', detail: 'Failed to Get Record!', life: 4000 });
     }).finally(() => {
-        
+
         loadingProduct.value = false
     })
 

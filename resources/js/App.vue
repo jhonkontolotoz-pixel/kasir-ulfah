@@ -1,4 +1,6 @@
 <template>
+    <Toast />
+    <ConfirmDialog />
         <component :is="layout"></component>
 </template>
 <script>

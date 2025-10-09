@@ -28,9 +28,9 @@ class OrderRequest extends FormRequest
             'payment_method' => 'sometimes|string|in:cash,card',
             'customer_id' => 'required|integer|exists:customers,id',
             'products' => 'required|array',
-            'products.*.product_id' => 'required|integer|exists:products,id',
-            'products.*.quantity' => 'required|integer|min:1',
-             
+            'products.*.id' => 'required|integer|exists:products,id',
+            'products.*.qty' => 'required|integer|min:1',
+
         ];
     }
 }

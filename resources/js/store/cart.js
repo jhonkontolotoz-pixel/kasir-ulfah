@@ -1,43 +1,74 @@
-import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
 
-export const useCartStore = defineStore('cart', () => {
-  // State
-  const cart = ref([]);
-  
-  // Getters
-  const getCart = computed(() => cart.value);
+export const useCartStore = defineStore(
+    "cart",
+    () => {
+        // State
+        const cart = ref([]);
 
-  // Actions
-  const addToCart = (product) => {
-    product = {...product , requested : 1}
-   cart.value.push(product)
-  };
+        const selectedCustomer = ref(null);
 
-  const deleteFromCart = (productId) => {
-    cart.value = cart.value.filter(product => product.id !== productId);
-  };
+        // Getters
+        const getCartItems = computed(() =>
+            cart.value.reduce((sum, item) => sum + item.qty, 0)
+        );
 
-  
-  const updateQuantity = (productId,quantity) => {
-    let product = cart.value.find(product => product.id == productId)
+        const total = computed(() =>
+            cart.value.reduce((sum, item) => sum + item.price * item.qty, 0)
+        );
 
-    product.requested = quantity
+        // Actions
+        const addToCart = (product) => {
+            const item = cart.value.find((i) => i.id === product.id);
+            if (item) item.qty++;
+            else cart.value.push({ ...product, qty: 1 });
+        };
 
-  };
+        const deleteFromCart = (productId) => {
+            cart.value = cart.value.filter(product => product.id !== productId);
+        };
 
-const clearCart = () => {
-    cart.value = [];
-  };
-  
-  return {
-    cart,
-    getCart,
-    addToCart,
-    deleteFromCart,
-    updateQuantity,
-    clearCart
-  };
-}, {
-  persist: true
-});
+        const increaseQty = (product) => {
+            product.qty++
+            cart.value = [...cart.value];
+            };
+        const decreaseQty = (product) => {
+            if (product.qty > 1) product.qty--;
+            else cart.value = cart.value.filter((i) => i.id !== product.id);
+            cart.value = [...cart.value];
+        };
+
+        const updateQty = (productId, qty) => {
+            const item = cart.value.find((i) => i.id === productId);
+            if (item) item.qty = qty;
+        };
+        const clearCart = () => {
+            cart.value.length = 0;
+        };
+
+        const createOrder = async () => {
+          return await axios.post('/api/orders', {
+                products: cart.value,
+                customer_id: selectedCustomer.value ? selectedCustomer.value.id : null,
+            })
+        };
+
+        return {
+            cart,
+            addToCart,
+            deleteFromCart,
+            increaseQty,
+            decreaseQty,
+            clearCart,
+            total,
+            getCartItems,
+            updateQty,
+            createOrder,
+            selectedCustomer
+        };
+    },
+    {
+        persist: true,
+    }
+);

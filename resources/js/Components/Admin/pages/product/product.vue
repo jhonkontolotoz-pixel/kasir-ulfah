@@ -23,7 +23,7 @@
 
                     :to="'/admin/products/'+product.id+'/edit'" />
             </div>
-            
+
     </div>
     <div v-if="loadingProduct" class="w-full ">
         <div class="flex gap-3">
@@ -64,7 +64,7 @@
         </div>
     </div>
     <div v-else class="card flex w-full p-3">
-        
+
             <div class="flex gap-6 mb-3">
 
                 <div class="inputs lg:w-3/4 md:w-3/4 w-full">
@@ -91,7 +91,7 @@
                         <label class=" font-medium mb-2 block">Description</label>
 
                         <div v-html="product.description">
-                            
+
                         </div>
                     </div>
 
@@ -99,28 +99,22 @@
                 </div>
 
                 <div class="fileupload flex flex-col gap-4 lg:w-1/4 md:w-1/4 w-full">
-                    <div class="w-full">
+                    <div v-if="product.category_name" class="w-full">
                         <label class=" font-medium mb-2 ">Category: </label>
-                        <Button 
+                        <Button
                     class="p-3 !text-gray-700 hover:!text-black" as="router-link" variant="text"
-                    
-                    :to="'/admin/categories/'+product.category_id" raised>{{ product.category_name }}</Button>
+
+                    :to="'/admin/categories/'+product.category_id" >{{ product.category_name }}</Button>
                     </div>
                     <div class="w-full">
                         <label class=" font-medium mb-2 block">Image</label>
-                        <template v-if="product.image">
-                            <img :src="'/storage/' + product?.image" alt="Product Image"
+
+                            <img :src="product?.image ? '/storage/' + product?.image : '/imgs/default.png'" alt="Product Image"
                                 class="shadow-md rounded-xl w-full sm:w-64" style="filter: grayscale(100%)" />
 
-                        </template>
-
-                        <template v-else>
-                            <img :src="'/storage/default.png'" alt="Product Image"
-                                class="shadow-md rounded-xl w-full sm:w-64" style="filter: grayscale(100%)" />
-                        </template>
 
                     </div>
-                    
+
                 </div>
             </div>
     </div>
@@ -169,7 +163,7 @@ async function getProduct() {
     }).catch(err => {
         toast.add({ severity: 'error', summary: 'failed', detail: 'Failed to Get Record!', life: 4000 });
     }).finally(() => {
-        
+
         loadingProduct.value = false
     })
 

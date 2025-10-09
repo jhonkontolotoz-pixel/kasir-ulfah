@@ -8,6 +8,7 @@ use App\Http\Requests\Customer\CustomerFilterRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Requests\Customer\CustomerRequest;
+use App\Http\Requests\Customer\CustomerSearchPOSRequest;
 use App\Http\Resources\Customer\CustomersCollection;
 use App\Http\Resources\Customer\CustomersResource;
 use App\Models\Customer;
@@ -16,13 +17,15 @@ use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
+
+
+    public function __construct(public CustomerRepository $customerRepository ) {}
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-
-    public function __construct(public CustomerRepository $customerRepository ) {}
 
     public function index(CustomerFilterRequest $request)
     {
@@ -83,5 +86,12 @@ class CustomerController extends Controller
         $customer->delete();
 
         return successResponse(message: "Customer Deleted Successfully");
+    }
+
+    public function searchPOS(CustomerSearchPOSRequest $request)
+    {
+        $customers = $this->customerRepository->getCustomersForPOS($request);
+
+        return successResponse($customers);
     }
 }

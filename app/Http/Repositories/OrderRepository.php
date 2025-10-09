@@ -23,7 +23,7 @@ class OrderRepository
 
         $key = "orders." . md5(http_build_query($request->all() + ['page' => $page]));
 
-        $orders =  Cache::remember($key, 60, function () use ($request) {
+        $orders =  Cache::tags(['orders'])->remember($key, 60, function () use ($request) {
 
             $orders = Order::with(['customer:id,name', 'user:id,name'])
                 ->withCount('products')

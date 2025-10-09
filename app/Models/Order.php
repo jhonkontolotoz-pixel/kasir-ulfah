@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class Order extends Model
@@ -64,6 +65,11 @@ class Order extends Model
             $order->code = $order->generateCode();
             $order->user_id = auth()->user()->id ?? 1;
         });
+
+        static::created(function ($order) {
+            //works on redis
+            //Cache::tags(['orders'])->flush();
+        });
     }
 
     /**
@@ -73,7 +79,7 @@ class Order extends Model
     {
         // Example SKU format: ORDR-<Random String>-<ID/Name Prefix>
         $randomPart = strtoupper(Str::random(6)); // 6-character random string
-        $namePart = strtoupper(substr(Str::random(6), 0, 3)); 
+        $namePart = strtoupper(substr(Str::random(6), 0, 3));
         return "ORDR-{$namePart}-{$randomPart}";
     }
 }

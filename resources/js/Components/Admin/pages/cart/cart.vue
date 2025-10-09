@@ -1,7 +1,7 @@
 <template>
     <Toast />
     <ConfirmDialog />
-
+<div class="p-4">
     <div class="card flex justify-between">
         <div>
             <Breadcrumb :home="home" :model="items" class="mb-5 text-md">
@@ -19,9 +19,9 @@
             </Breadcrumb>
         </div>
         <div class="flex gap-2">
-            <Button v-if="cart.getCart.length" v-tooltip.bottom="{ value: 'Clear All Products From Cart', pt: { text: '!text-[0.7rem]' } }"
+            <Button v-if="cart.length" v-tooltip.bottom="{ value: 'Clear All Products From Cart', pt: { text: '!text-[0.7rem]' } }"
                 variant="text" type="text" class="self-center" severity="contrast" icon="pi pi-trash"
-                @click.prevent="clearCart()" />
+                @click.prevent="_clearCart()" />
 
         </div>
 
@@ -29,8 +29,8 @@
     </div>
 
 
-    <template v-if="Array.from(cart.getCart)?.length > 0">
-        <DataTable :value="Array.from(cart.getCart)" tableStyle="min-width: 50rem;" class="text-sm">
+    <template v-if="Array.from(cart)?.length > 0">
+        <DataTable :value="Array.from(cart)" tableStyle="min-width: 50rem;" class="text-sm">
             <Column header="#" style="width: 4%">
                 <template #body="{ index }">
                     {{ index + 1 }}
@@ -43,13 +43,13 @@
                         slotProps.data.title }}</router-link>
                 </template>
             </Column>
-            <Column field="requested" header="Quantity" sortable style="width: 45%"></Column>
+            <Column field="qty" header="Quantity" sortable style="width: 45%"></Column>
             <Column field="quantity" header="In Stock" sortable style="width: 50%"></Column>
-            
+
             <Column style="width:5%">
                 <template #body="slotProps">
                     <div class="flex gap-1">
-                        <InputNumber inputClass="!w-[3rem]" :defaultValue="slotProps.data.requested" @value-change="updateQuantity(slotProps.data.id , $event)" showButtons buttonLayout="horizontal"  size="small" class="" :min="1" :max="slotProps.data.quantity">
+                        <InputNumber inputClass="!w-[3rem]" :defaultValue="slotProps.data.qty" @value-change="updateQty(slotProps.data.id , $event)" showButtons buttonLayout="horizontal"  size="small" class="" :min="1" :max="slotProps.data.quantity">
                         <template #incrementbuttonicon><span class="pi pi-plus"></span></template>
                         <template #decrementbuttonicon><span class="pi pi-minus"></span></template>
                         </InputNumber>
@@ -63,14 +63,15 @@
 
         </DataTable>
         <div class="flex justify-items-start my-4">
-            <Button label="Checkout" icon="pi pi" variant="text" severity="contrast" raised />
+            <Button label="Checkout" icon="pi pi" variant="text" severity="contrast" raised @click="createOrder" />
         </div>
     </template>
     <template v-else>
 
-        <p class="text-center m-5">Cart is Empty <router-link :to="{ name: 'admin.orders.create' }" class="underline">Create
+        <p class="text-center m-5">Cart is empty <router-link :to="{ name: 'admin.pos' }" class="underline font-bold">Create
                 Order</router-link></p>
     </template>
+</div>
 </template>
 
 <script setup>
@@ -78,10 +79,13 @@ import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from "primevue/useconfirm";
 import { useCartStore } from '@/store/cart'
+import { storeToRefs } from 'pinia'
 
 const confirm = useConfirm();
 const toast = useToast();
-const cart = useCartStore()
+const cartStore = useCartStore()
+
+const {cart,updateQty} = storeToRefs(cartStore)
 const home = ref({
     icon: 'pi pi-home',
     route: '/dashboard'
@@ -106,7 +110,7 @@ const deleteRecord = (id) => {
             severity: 'danger'
         },
         accept: () => {
-            cart.deleteFromCart(id)
+            cartStore.deleteFromCart(id)
             toast.add({ severity: 'success', summary: 'Cleared', detail: 'Porduct Deleted!', life: 4000 });
         },
         reject: () => {
@@ -115,7 +119,7 @@ const deleteRecord = (id) => {
     });
 };
 
-const clearCart = (id) => {
+const _clearCart = (id) => {
     confirm.require({
         message: 'Do you want to delete this record?',
         header: 'Danger Zone',
@@ -131,7 +135,7 @@ const clearCart = (id) => {
             severity: 'danger'
         },
         accept: () => {
-            cart.clearCart()
+            cartStore.clearCart()
             toast.add({ severity: 'success', summary: 'Cleared', detail: 'Cart Cleared!', life: 4000 });
         },
         reject: () => {
@@ -140,10 +144,11 @@ const clearCart = (id) => {
     });
 };
 
-const updateQuantity = (productId , event ) => {
-    cart.updateQuantity(productId , event)
 
-}
+const createOrder = async () => {
+
+};
+
 
 </script>
 

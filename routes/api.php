@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-   
+
     Route::apiResource('products', ProductController::class);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('customers', CustomerController::class);
@@ -40,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('ordersStatusChart',[DashboardController::class , 'ordersStatusChart']);
     Route::get('revenueChart',[DashboardController::class , 'revenueChart']);
     Route::get('topProducts',[DashboardController::class , 'topProducts']);
-   
+    Route::get('customers/search/pos',[CustomerController::class , 'searchPOS']);
 });
 
 Route::post("/login", [AuthenticatedSessionController::class, 'store']);

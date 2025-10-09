@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-.p-overlay-mask{
+/* .p-overlay-mask{
     background: white !important;
     color: white;
     border-radius: 5px;
 
-}
+} */
 .p-datatable-mask{
     display: block !important;
 

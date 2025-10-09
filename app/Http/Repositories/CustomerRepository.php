@@ -7,7 +7,6 @@ use App\Http\Resources\Product\ProductCollection;
 use App\Models\Customer;
 use App\Models\Product;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 
 class CustomerRepository
 {
@@ -46,4 +45,20 @@ class CustomerRepository
         return [$customers, $key];
     }
 
+    public function getCustomersForPOS($request)
+    {
+        $query = $request->get('query', '');
+
+        $customers = Customer::when(!!!$request->query, function ($q) use ($query) {
+            $q->where('name', 'LIKE', "%{$query}%")
+                ->orWhere('phone', 'LIKE', "%{$query}%")
+                ->orWhere('email', 'LIKE', "%{$query}%");
+        })
+            ->select('id', 'name')
+            ->limit($request->limit ?? 10)
+            ->get();
+
+
+        return $customers;
+    }
 }

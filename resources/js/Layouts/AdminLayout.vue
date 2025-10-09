@@ -11,7 +11,7 @@
                     <Button icon="pi pi-bars" severity="secondary" variant="text" rounded aria-label="bars"
                         @click="isOpenSidebar = !isOpenSidebar" />
                 </div>
-                
+
                 <div class=" flex flex-wrap flex-row-reverse">
                     <div class="card flex flex-wrap justify-center flex-row-reverse gap-4 ">
                         <a class="flex !w-9 !h-9 cursor-pointer rounded-full hover:outline-1" @click="toggle"
@@ -23,30 +23,32 @@
                             aria-label="Notification" />
                         <Button icon="pi pi-table" severity="secondary" variant="text" rounded aria-label="Table" />
                         <Button icon="pi pi-search" severity="secondary" variant="text" rounded aria-label="Search" />
-                        <Button icon="pi pi-shopping-cart" severity="secondary" variant="text"   aria-label="Cart" :badge="cart.getCart?.length > 0 ? cart.getCart?.length.toString() : ''" badgeSeverity="contrast" as="router-link" to="/admin/cart" />
-                        
+                        <Button icon="pi pi-shopping-cart" severity="secondary" variant="text"   aria-label="Cart" :badge="getCartItems > 0 ? getCartItems : ''" badgeSeverity="contrast" as="router-link" to="/admin/cart" />
+
                     </div>
                 </div>
             </nav>
             <div class="px-6 pb-6">
-                <div class="card shadow-lg shadow-slate-100 border rounded p-3">
+                <div class="card shadow-lg shadow-slate-100 ">
                     <router-view ></router-view>
-                </div> 
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-    import { ref } from 'vue'
+    import { ref,computed } from 'vue'
     import Sidebar from '@/Components/inc/Sidebar.vue'
     import { useAuthStore } from '@/store/auth'
     import { useCartStore } from '@/store/cart'
     import { useRouter } from 'vue-router'
+    import { storeToRefs } from 'pinia'
 
     const router = useRouter()
     const auth = useAuthStore()
-    const cart = useCartStore()
+    const cartStore = useCartStore()
+    const {getCartItems} = storeToRefs(cartStore)
     const isOpenSidebar = ref(true)
     const menu = ref();
     const items = ref([
@@ -81,6 +83,8 @@
             ]
         }
     ]);
+
+    const cartItems = computed(() => getCartItems)
 
     const toggle = (event) => {
         menu.value.toggle(event);
