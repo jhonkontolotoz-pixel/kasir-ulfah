@@ -29,15 +29,21 @@
                 <Button label="Sign In" :disabled="loading" @click.prevent="login" icon="pi pi-user" severity="success"
                     class="!outline-none !border-none !bg-indigo-700" />
             </div>
+            <p>
+    Don't have an account? 
+    <router-link to="/register" class="font-bold hover:underline">
+      Register
+    </router-link>
+  </p>
         </div>
     </div>
 </template>
 <script setup>
-
 import { ref } from 'vue';
 import { useAuthStore } from '@/store/auth';
 import { useToast } from "primevue/usetoast";
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
+import axios from 'axios'; // <-- WAJIB DITAMBAH
 
 const creds = ref({
     email: '',
@@ -46,28 +52,37 @@ const creds = ref({
 })
 
 const toast = useToast();
-const loading = ref(false)
-const loginfailed = ref(false)
-const authStore = useAuthStore()
-const router = useRouter()
+const loading = ref(false);
+const loginfailed = ref(false);
+const authStore = useAuthStore();
+const router = useRouter();
 
 const login = async () => {
+    loading.value = true;
+    loginfailed.value = false; // Reset status error tiap kali klik
 
-    loading.value = true
-    await axios.get("sanctum/csrf-cookie")
-    await axios.post("api/login", creds.value)
-        .then(res => {
-            authStore.login(res.data.data)
-            router.push({ name: 'admin.dashboard' })
-        })
-        .catch(err => {
-            loginfailed.value = true;
-            toast.add({ severity: 'error', summary: 'Login Failed', detail: 'Invalid Email or Password', life: 5000 });
-        })
-        .finally(() => {
-            loading.value = false
-        })
+    try {
+        // Ambil CSRF Cookie dulu (Wajib untuk Sanctum)
+        await axios.get("/sanctum/csrf-cookie");
+        
+        // Panggil login
+        const res = await axios.post("/api/login", creds.value);
+        
+        // Pastikan key ini sesuai dengan return JSON di backend (data atau user)
+        const userData = res.data.user || res.data.data;
+        
+        authStore.login(userData);
+        
+        toast.add({ severity: 'success', summary: 'Success', detail: 'Welcome back!', life: 3000 });
+        
+        router.push({ name: 'admin.dashboard' });
+    } catch (err) {
+        loginfailed.value = true;
+        // Ambil pesan error dari Laravel jika ada (misal: "These credentials do not match our records")
+        const msg = err.response?.data?.message || 'Invalid Email or Password';
+        toast.add({ severity: 'error', summary: 'Login Failed', detail: msg, life: 5000 });
+    } finally {
+        loading.value = false;
+    }
 }
-
-
 </script>

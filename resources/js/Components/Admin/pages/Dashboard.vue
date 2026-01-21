@@ -94,13 +94,7 @@ const getCounts = async () => {
         })
 }
 
-
 onMounted(async () => {
     await getCounts()
 })
-
-
 </script>
-
-
-<style scoped></style>

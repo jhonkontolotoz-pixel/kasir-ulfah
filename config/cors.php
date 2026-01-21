@@ -15,20 +15,25 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+'paths' => ['api/*', 'sanctum/csrf-cookie', 'login', 'register'], // Tambahkan login & register jika route-nya tidak pakai prefix api
 
-    'allowed_methods' => ['*'],
+'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+// JANGAN gunakan ['*']. Masukkan URL frontend kamu secara spesifik.
+'allowed_origins' => [
+    'http://localhost:5173', 
+    'http://127.0.0.1:5173',
+    'http://localhost:3000' // Sesuaikan dengan port yang kamu pakai di Vue
+],
 
-    'allowed_origins_patterns' => [],
+'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+'allowed_headers' => ['*'],
 
-    'exposed_headers' => [],
+'exposed_headers' => [],
 
-    'max_age' => 0,
+'max_age' => 0,
 
-    'supports_credentials' => true,
+'supports_credentials' => true, // Ini sudah benar, tapi butuh allowed_origins yang spesifik
 
 ];

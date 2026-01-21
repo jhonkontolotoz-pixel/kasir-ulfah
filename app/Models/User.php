@@ -9,14 +9,14 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
-use Laravel\Sanctum\HasApiTokens;
 use App\Models\Ability;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens,HasFactory, Notifiable,SoftDeletes ;
+    use HasApiTokens, HasFactory, Notifiable,SoftDeletes ;
 
     /**
      * The attributes that are mass assignable.

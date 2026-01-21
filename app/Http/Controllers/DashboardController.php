@@ -37,8 +37,4 @@ class DashboardController extends Controller
     {
         return successResponse(DashboardService::topProducts());
     }
-
-
-  
-
 }
