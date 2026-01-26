@@ -34,7 +34,7 @@ The system supports real-time data interaction, dynamic UI components, and robus
 
 | Layer                | Technology                                   |
 | -------------------- | -------------------------------------------- |
-| **Backend**          | Laravel 9, PHP 8.0+                          |
+| **Backend**          | Laravel 9, PHP 8.0+ BISA DIUPDATE            |
 | **Frontend**         | Vue 3, Vite, Tailwind CSS                    |
 | **UI Library**       | PrimeVue 4.2, PrimeIcons 7                   |
 | **State Management** | Pinia                                        |
@@ -52,7 +52,7 @@ The system supports real-time data interaction, dynamic UI components, and robus
 
 ```bash
 git clone https://github.com/mafifi96/kasir-ulfah.git
-cd Laravel-Vue-POS
+cd kasir-ulfah
 ```
 
 ### 2️⃣ Install PHP dependencies
