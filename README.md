@@ -51,7 +51,7 @@ The system supports real-time data interaction, dynamic UI components, and robus
 ### 1️⃣ Clone the repository
 
 ```bash
-git clone https://github.com/mafifi96/Laravel-Vue-POS.git
+git clone https://github.com/mafifi96/kasir-ulfah.git
 cd Laravel-Vue-POS
 ```
 
@@ -165,32 +165,7 @@ laravel-vue-pos/
 * Supports user roles (admin, cashier, etc.)
 * Persistent session handled through frontend Pinia store
 
----
-
-## 📈 Optional Integrations
-
-* **Email receipts** (using Laravel Mailables)
-* **Inventory sync** with third-party APIs via Guzzle
-* **PDF invoices** auto-generated and downloadable
-* **Offline mode** (optional future enhancement)
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome!
-Follow PSR-12 coding standards and ensure your code passes tests before submitting.
-
----
-
-## 🪪 License
-
-This project is licensed under the **MIT License** — feel free to use and modify it.
-
----
 
 ## 🌟 Author
 
-**Binary Verse**
-Full-stack Laravel + Vue Developer
-🔗 [https://github.com/mafifi96](https://github.com/mafifi96)
+sumber dari m afifi
