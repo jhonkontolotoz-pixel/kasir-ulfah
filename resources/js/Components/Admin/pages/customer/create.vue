@@ -66,21 +66,24 @@ const items = ref([
 
 
 async function createCustomer() {
-
     loading.value = true
 
-    await axios.post(`/api/customers`, customer.value).then(res => {
+    const userId = localStorage.getItem('user_id') // atau dari store / inertia props
+
+    await axios.post(`/api/customers`, customer.value, {
+        headers: {
+            id: userId
+        }
+    }).then(res => {
         toast.add({ severity: 'success', summary: 'Saved', detail: 'Customer Saved Successfully', life: 4000 });
         customer.value = {}
     }).catch(err => {
-        toast.add({ severity: 'error', summary: 'failed', detail: 'Failed to Save Record!', life: 4000 });
+        console.log(err.response)
+        toast.add({ severity: 'error', summary: 'Failed', detail: 'Failed to Save Record!', life: 4000 });
     }).finally(() => {
         loading.value = false
     })
-
 }
-
-
 
 </script>
 

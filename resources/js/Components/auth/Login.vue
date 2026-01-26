@@ -62,20 +62,21 @@ const login = async () => {
     loginfailed.value = false; // Reset status error tiap kali klik
 
     try {
-        // Ambil CSRF Cookie dulu (Wajib untuk Sanctum)
-        await axios.get("/sanctum/csrf-cookie");
-        
-        // Panggil login
-        const res = await axios.post("/api/login", creds.value);
-        
-        // Pastikan key ini sesuai dengan return JSON di backend (data atau user)
-        const userData = res.data.user || res.data.data;
-        
-        authStore.login(userData);
-        
-        toast.add({ severity: 'success', summary: 'Success', detail: 'Welcome back!', life: 3000 });
-        
-        router.push({ name: 'admin.dashboard' });
+    // ... (setelah axios.post)
+const res = await axios.post("/api/login", creds.value);
+
+// 1. Ambil user dan token dari response backend
+const userData = res.data.user || res.data.data;
+const userToken = res.data.token || res.data.access_token; // Sesuaikan key dari backend kamu
+
+// 2. Kirim object lengkap ke store sesuai struktur: { user, token }
+authStore.login({ 
+    user: userData, 
+    token: userToken 
+});
+
+toast.add({ severity: 'success', summary: 'Success', detail: 'Welcome back!', life: 3000 });
+router.push({ name: 'admin.dashboard' });
     } catch (err) {
         loginfailed.value = true;
         // Ambil pesan error dari Laravel jika ada (misal: "These credentials do not match our records")

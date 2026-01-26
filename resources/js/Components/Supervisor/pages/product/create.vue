@@ -193,7 +193,3 @@ import Errors from '../../../inc/ValidationErrors.vue'
     }
 
 </script>
-
-<style>
-
-</style>

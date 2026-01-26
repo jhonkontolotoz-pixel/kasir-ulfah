@@ -26,7 +26,7 @@ class CustomerRequest extends FormRequest
         return [
             'name' => 'sometimes|string|max:30',
             'email' => 'sometimes|string|email|unique:customers,email|max:255',
-            'phone' => 'sometimes|numeric',
+            'phone' => ['sometimes', 'regex:/^\+?[0-9]{9,15}$/'],
             'address' => 'sometimes|string|min:5|max:30',
         ];
     }

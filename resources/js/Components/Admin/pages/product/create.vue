@@ -115,37 +115,48 @@ async function getCategories() {
 }
 
 async function createProduct() {
-
-    loading.value = true
+    loading.value = true;
 
     const formData = new FormData();
 
     for (const key in product.value) {
-        formData.append(key, product.value[key])
+        if (product.value[key] !== null) {
+            formData.append(key, product.value[key]);
+        }
     }
 
+    try {
+        await axios.post('/api/products', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            withCredentials: true
+        });
 
-    await axios.post(`/api/products`, formData).then(res => {
         toast.add({ severity: 'success', summary: 'Saved', detail: 'Product Saved Successfully', life: 4000 });
-    }).catch(err => {
-        toast.add({ severity: 'error', summary: 'failed', detail: 'Failed to Save Record!', life: 4000 });
-    }).finally(() => {
-        loading.value = false
-    })
 
+    } catch (err) {
+        console.error(err.response?.data || err);
+        toast.add({ severity: 'error', summary: 'Failed', detail: 'Failed to Save Record!', life: 4000 });
+    } finally {
+        loading.value = false;
+    }
 }
 
 function onFileSelect(event) {
-    const file = event.files[0];
+    const file = event.files?.[0] || event.target?.files?.[0];
+    if (!file) return;
+
     const reader = new FileReader();
 
-    reader.onload = async (e) => {
+    reader.onload = (e) => {
         src.value = e.target.result;
     };
 
-    product.value.image = file
+    product.value.image = file;
     reader.readAsDataURL(file);
 }
+
 
 onMounted(async () => {
     await getCategories()
