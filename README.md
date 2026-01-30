@@ -1,127 +1,22 @@
-# 🧾 Laravel + Vue POS System
+# Kasir Ulfah - Point of Sale (POS) System
 
-A **modern Point of Sale (POS)** system built with **Laravel 9 (backend)** and **Vue 3 (frontend)**, designed for speed, scalability, and an excellent user experience.
-The system supports real-time data interaction, dynamic UI components, and robust backend APIs for managing sales, inventory, and users.
+Sistem manajemen kasir berbasis web yang dirancang untuk mengelola transaksi penjualan, stok barang, dan laporan keuangan secara efisien dan akurat.
 
----
+## 🌟 Fitur Utama
 
-## 🚀 Features
+* **Manajemen Inventaris:** Input data barang, kategori, stok, serta harga jual/beli.
+* **Transaksi Penjualan:** Antarmuka kasir yang responsif untuk memproses pesanan pelanggan.
+* **Cetak Struk:** Mendukung pencetakan struk belanja setelah transaksi berhasil.
+* **Laporan Penjualan:** Ringkasan laporan harian, mingguan, hingga bulanan untuk memantau performa bisnis.
+* **Manajemen Pengguna:** Pengaturan hak akses untuk admin dan kasir.
+* **Dashboard Informatif:** Visualisasi data stok kritis dan total pendapatan.
 
-### 🖥️ Frontend (Vue 3 + Vite + Tailwind + PrimeVue)
+## 🛠️ Teknologi yang Digunakan
 
-* **Modern SPA** built with Vue 3 Composition API
-* **State Management** via Pinia + Persisted State
-* **Dynamic UI Components** powered by PrimeVue and PrimeIcons
-* **Customizable Themes** using `@primevue/themes`
-* **Charts & Analytics** with Chart.js
-* **Rich Text Editing** with Quill
-* **Multi-language support** using Laravel Vue i18n
-* **Lightning-fast build** with Vite
-
-### ⚙️ Backend (Laravel 9)
-
-* RESTful API architecture
-* Authentication & authorization with Laravel Sanctum
-* PDF generation with DomPDF (`barryvdh/laravel-dompdf`)
-* HTTP client integration via Guzzle
-* SQLite and PDO driver ready
-* Developer tools (Tinker, Pint, PHPUnit, Ignition)
-* Scalable structure ready for Docker/Sail
-
----
-
-## 🏗️ Tech Stack
-
-| Layer                | Technology                                   |
-| -------------------- | -------------------------------------------- |
-| **Backend**          | Laravel 9, PHP 8.0+ BISA DIUPDATE            |
-| **Frontend**         | Vue 3, Vite, Tailwind CSS                    |
-| **UI Library**       | PrimeVue 4.2, PrimeIcons 7                   |
-| **State Management** | Pinia                                        |
-| **Database**         | SQLite (default), MySQL/PostgreSQL supported |
-| **Testing**          | PHPUnit, Mockery                             |
-| **PDF Generation**   | barryvdh/laravel-dompdf                      |
-| **HTTP Client**      | GuzzleHTTP                                   |
-| **Localization**     | laravel-vue-i18n                             |
-
----
-
-## 📦 Installation
-
-### 1️⃣ Clone the repository
-
-```bash
-git clone https://github.com/mafifi96/kasir-ulfah.git
-cd kasir-ulfah
-```
-
-### 2️⃣ Install PHP dependencies
-
-```bash
-composer install
-```
-
-### 3️⃣ Install Node dependencies
-
-```bash
-npm install
-```
-
-### 4️⃣ Environment setup
-
-Copy `.env.example` to `.env` and configure your settings:
-
-```bash
-cp .env.example .env
-php artisan key:generate
-php artisan storage:link
-```
-
-Make sure your `.env` includes database credentials:
-
-```env
-DB_CONNECTION=sqlite
-# or use
-# DB_CONNECTION=mysql
-# DB_HOST=127.0.0.1
-# DB_PORT=3306
-# DB_DATABASE=pos
-# DB_USERNAME=root
-# DB_PASSWORD=
-```
-
-### 5️⃣ Run migrations & seeders
-
-```bash
-php artisan migrate --seed
-```
-
-### 6️⃣ Build frontend
-
-```bash
-npm run build
-# or for development
-npm run dev
-```
-
-### 7️⃣ Run the server
-
-```bash
-php artisan serve
-```
-
----
-
-## 🧠 Development Mode (with Laravel Sail)
-
-If you’re using Docker:
-
-```bash
-./vendor/bin/sail up -d
-./vendor/bin/sail npm run dev
-```
-
----
+* **Backend:** PHP (Laravel Framework)
+* **Frontend:** Tailwind CSS / Bootstrap (opsional, sesuaikan dengan yang Anda pakai)
+* **Database:** MySQL
+* **Lainnya:** DomPDF (untuk cetak laporan/struk)
 
 ## 🧩 Folder Structure Overview
 
@@ -148,24 +43,33 @@ laravel-vue-pos/
 ```
 
 ---
+## 📦 Instalasi
 
-## 🧾 Key Commands
+1.  **Clone Repositori**
+    ```bash
+    git clone [https://github.com/jhonkontolotoz-pixel/kasir-ulfah.git](https://github.com/jhonkontolotoz-pixel/kasir-ulfah.git)
+    cd kasir-ulfah
+    ```
 
-| Purpose                  | Command             |
-| ------------------------ | ------------------- |
-| Start Laravel dev server | `php artisan serve` |
-| Run frontend dev server  | `npm run dev`       |
-| Compile for production   | `npm run build`     |
+2.  **Instal Dependensi**
+    ```bash
+    composer install
+    npm install && npm run build
+    ```
 
----
+3.  **Konfigurasi Lingkungan**
+    Salin file `.env.example` menjadi `.env` dan sesuaikan koneksi database Anda:
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
 
-## 🔒 Authentication
+4.  **Migrasi Database**
+    ```bash
+    php artisan migrate --seed
+    ```
 
-* Token-based authentication via **Laravel Sanctum**
-* Supports user roles (admin, cashier, etc.)
-* Persistent session handled through frontend Pinia store
-
-
-## 🌟 Author
-
-sumber dari m afifi
+5.  **Jalankan Server**
+    ```bash
+    php artisan serve
+    ```
